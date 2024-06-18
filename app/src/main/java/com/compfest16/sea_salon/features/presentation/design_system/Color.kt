@@ -1,4 +1,4 @@
-package com.compfest16.sea_salon.ui.theme
+package com.compfest16.sea_salon.features.presentation.design_system
 
 import androidx.compose.ui.graphics.Color
 

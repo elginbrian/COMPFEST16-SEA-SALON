@@ -11,7 +11,7 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class UserRepositoryImpl: UserRepository {
+class UserRepositoryImpl() : UserRepository {
     private val db = Firebase.firestore
 
     override suspend fun GetUsers(): Flow<List<UserModel>> {

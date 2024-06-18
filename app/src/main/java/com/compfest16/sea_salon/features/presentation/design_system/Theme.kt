@@ -1,6 +1,5 @@
-package com.compfest16.sea_salon.ui.theme
+package com.compfest16.sea_salon.features.presentation.design_system
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
