@@ -3,6 +3,13 @@ package com.compfest16.sea_salon.features.domain.dummy
 import com.compfest16.sea_salon.features.domain.model.UserModel
 
 object UserDummy {
+    var notFound = UserModel(
+        userID = "notfound",
+        fullName = "Not Found",
+        email = "-",
+        phoneNum = "-",
+        password = "-"
+    )
     var bagas = UserModel(
         userID = "dummy1",
         fullName = "Bagas Raditya",

@@ -3,6 +3,13 @@ package com.compfest16.sea_salon.features.domain.dummy
 import com.compfest16.sea_salon.features.domain.model.ReviewModel
 
 object ReviewDummy {
+    var notFound = ReviewModel(
+        reviewID = "notFound",
+        userID = "notFound",
+        branchID = "notFound",
+        star = 0,
+        comment = "not found"
+    )
     var bagasMalang = ReviewModel(
         reviewID = "dummy21",
         userID = "dummy1",

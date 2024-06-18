@@ -3,6 +3,14 @@ package com.compfest16.sea_salon.features.domain.dummy
 import com.compfest16.sea_salon.features.domain.model.BranchModel
 
 object BranchDummy {
+    var notFound = BranchModel(
+        branchID = "notFound",
+        branchName = "Not Found",
+        branchAddress = "-",
+        branchCoordinates = Pair(0.0, 0.0),
+        openingHours = "00:00",
+        closingHours = "00:00"
+    )
     var malang = BranchModel(
         branchID = "dummy11",
         branchName = "Malang Veteran",

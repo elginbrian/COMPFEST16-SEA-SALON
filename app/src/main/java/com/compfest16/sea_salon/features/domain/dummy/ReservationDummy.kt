@@ -3,6 +3,13 @@ package com.compfest16.sea_salon.features.domain.dummy
 import com.compfest16.sea_salon.features.domain.model.ReservationModel
 
 object ReservationDummy {
+    var notFound = ReservationModel(
+        reservationID = "notFound",
+        branchID = "notFound",
+        userID = "notFound",
+        date = "2000-01-01",
+        reservationType = 1
+    )
     var bagasMalang = ReservationModel(
         reservationID = "dummy41",
         branchID = "dummy11",
