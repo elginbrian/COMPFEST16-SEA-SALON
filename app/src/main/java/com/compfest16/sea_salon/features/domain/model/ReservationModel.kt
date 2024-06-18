@@ -11,6 +11,14 @@ data class ReservationModel(
     val reservationType: Int,
     val date: String
 ){
+    fun getReservationType(): String{
+        return when(reservationType){
+            1 -> "Haircuts and styling"
+            2 -> "Manicure and pedicure"
+            3 -> "Facial treatments"
+            else -> "Custom"
+        }
+    }
     suspend fun getUser(
         repository: UserRepository,
         onSuccess: (UserModel) -> Unit
