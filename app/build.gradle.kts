@@ -55,11 +55,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation("androidx.compose.material3:material3-android:1.2.0-rc01")
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
@@ -73,4 +73,20 @@ dependencies {
 
     // Koin
     implementation(libs.koin.androidx.compose)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
+
+    // Accompanist
+    implementation(libs.accompanist.systemuicontroller)
+
+    // CameraX
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
 }
