@@ -4,15 +4,44 @@ import android.util.Log
 import com.compfest16.sea_salon.features.data.mapper.toHashMap
 import com.compfest16.sea_salon.features.data.mapper.toUserModel
 import com.compfest16.sea_salon.features.domain.dummy.UserDummy
+import com.compfest16.sea_salon.features.domain.model.ImageModel
 import com.compfest16.sea_salon.features.domain.model.UserModel
+import com.compfest16.sea_salon.features.domain.repository.ImageRepository
 import com.compfest16.sea_salon.features.domain.repository.UserRepository
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class UserRepositoryImpl() : UserRepository {
+class UserRepositoryImpl : UserRepository {
     private val db = Firebase.firestore
+    private val auth = Firebase.auth
+    override suspend fun SignUpUser(user: UserModel, image: ImageModel): Flow<String> {
+        return flow {
+            try {
+              var message = ""
+              auth.createUserWithEmailAndPassword(user.email, user.password).addOnSuccessListener {
+                  val updateProfile = userProfileChangeRequest {
+                      displayName = user.fullName
+                      photoUri = image.src
+                  }
+                  auth.currentUser?.updateProfile(updateProfile)
+                  message = "SignUp Success"
+                  Log.d("SignUp", "SignUp Success")
+              }.addOnFailureListener {
+                  message = it.message.toString()
+                  Log.d("SignUp", it.message.toString())
+              }
+                emit(message)
+                return@flow
+            } catch (e: Exception){
+                emit(e.message.toString())
+                return@flow
+            }
+        }
+    }
 
     override suspend fun GetUsers(): Flow<List<UserModel>> {
         return flow {

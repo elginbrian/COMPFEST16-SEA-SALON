@@ -30,14 +30,16 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurp
 @Preview
 @Composable
 fun EditProfileButton(
-    color: Color = CompfestPurple
+    color: Color = CompfestPurple,
+    onClick: (Uri) -> Unit = {}
 ){
-    val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
+    val selectedImageUri = remember { mutableStateOf<Uri?>(Uri.EMPTY) }
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             selectedImageUri.value = uri
+            selectedImageUri.value?.let { onClick(it) }
         }
     )
 
@@ -54,7 +56,9 @@ fun EditProfileButton(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
             }, contentAlignment = Alignment.Center){
-            AsyncImage(model = selectedImageUri, contentDescription = "profile", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            if(selectedImageUri.value != Uri.EMPTY){
+                AsyncImage(model = selectedImageUri, contentDescription = "profile", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            }
             Icon(imageVector = Icons.Default.Add, contentDescription = "profile", tint = Color.White, modifier = Modifier.size(40.dp))
         }
     }

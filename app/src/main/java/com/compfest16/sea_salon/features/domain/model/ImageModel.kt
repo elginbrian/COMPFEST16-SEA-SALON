@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class ImageModel(
     val imageID: String = UUID.randomUUID().toString(),
-    val affiliateID: String,
+    var affiliateID: String,
     val src: Uri,
     val alt: String = "",
     val role: Int

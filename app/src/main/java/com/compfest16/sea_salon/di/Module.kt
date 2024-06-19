@@ -25,7 +25,7 @@ object Module {
     }
 
     val viewModel = module {
-        viewModel { AuthViewModel(get()) }
+        viewModel { AuthViewModel(get(), get()) }
         viewModel { HomeViewModel(get()) }
     }
 }

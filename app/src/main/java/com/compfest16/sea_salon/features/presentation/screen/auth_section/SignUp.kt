@@ -1,6 +1,7 @@
 package com.compfest16.sea_salon.features.presentation.screen.auth_section
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.R
+import com.compfest16.sea_salon.features.domain.dummy.ImageDummy
+import com.compfest16.sea_salon.features.domain.dummy.UserDummy
 import com.compfest16.sea_salon.features.presentation.component.button.EditProfileButton
 import com.compfest16.sea_salon.features.presentation.component.button.RoundedBarButton
 import com.compfest16.sea_salon.features.presentation.component.textfield.SecureLineTextField
@@ -40,14 +43,20 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
+import org.koin.androidx.compose.getViewModel
+import java.util.UUID
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun SignUp(
-    splahController: NavController = rememberNavController()
+    splashController: NavController = rememberNavController()
 ){
-    val signUp = remember { mutableStateOf(false) }
+    val viewModel  = getViewModel<AuthViewModel>()
+    val signUp     = remember { mutableStateOf(false) }
+    val imageModel = remember { mutableStateOf(ImageDummy.notFound) }
+    val userModel  = remember { mutableStateOf(UserDummy.empty) }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -63,18 +72,69 @@ fun SignUp(
             Spacer(modifier = Modifier.height(32.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                EditProfileButton(color = CompfestAqua)
+                EditProfileButton(color = CompfestAqua){
+                    imageModel.value = imageModel.value.copy(
+                        src = it,
+                        alt = "profile-picture",
+                        role = 1,
+                        imageID = UUID.randomUUID().toString()
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            SingleLineTextField(title = "Username", painter = painterResource(id = R.drawable.person))
-            SingleLineTextField(title = "Email", painter = painterResource(id = R.drawable.email), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
-            SingleLineTextField(title = "Phone Number", painter = painterResource(id = R.drawable.email), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
-            SecureLineTextField(title = "Password", painter = painterResource(id = R.drawable.password))
-            SecureLineTextField(title = "Confirm Password", painter = painterResource(id = R.drawable.password))
+            SingleLineTextField(
+                title = "Username",
+                painter = painterResource(id = R.drawable.person),
+                value = userModel.value.fullName,
+                onValueChange = {
+                    userModel.value.fullName = it
+                }
+            )
+            SingleLineTextField(
+                title = "Email",
+                painter = painterResource(id = R.drawable.email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                value = userModel.value.email,
+                onValueChange = {
+                    userModel.value.email = it
+                }
+            )
+            SingleLineTextField(
+                title = "Phone Number",
+                painter = painterResource(id = R.drawable.email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                value = userModel.value.phoneNum,
+                onValueChange = {
+                    userModel.value.phoneNum = it
+                }
+            )
+            SecureLineTextField(
+                title = "Password",
+                painter = painterResource(id = R.drawable.password),
+                value = userModel.value.password,
+                onValueChange = {
+                    userModel.value.password = it
+                }
+            )
+            SecureLineTextField(
+                title = "Confirm Password",
+                painter = painterResource(id = R.drawable.password),
+                value = userModel.value.password,
+                onValueChange = {
+                    userModel.value.password
+                }
+            )
             Spacer(modifier = Modifier.height(32.dp))
+
             RoundedBarButton(text = "Create Account", color = CompfestAqua){
                 signUp.value = true
+                userModel.value.userID = UUID.randomUUID().toString()
+                imageModel.value.affiliateID = userModel.value.userID
+
+                viewModel.signUp(userModel.value, imageModel.value){
+                    Log.d("Screen", it.toString())
+                }
             }
         }
 
@@ -84,7 +144,7 @@ fun SignUp(
             Text(text = "Already have an account?", fontSize = 14.sp, color = CompfestWhite)
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Login", fontSize = 14.sp, color = CompfestPurple, fontWeight = FontWeight.SemiBold, modifier = Modifier.clickable {
-                splahController.navigate(SplashNav.Login.route)
+                splashController.navigate(SplashNav.Login.route)
             })
         }
 

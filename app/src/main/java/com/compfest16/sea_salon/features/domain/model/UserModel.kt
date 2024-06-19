@@ -5,11 +5,11 @@ import com.compfest16.sea_salon.features.domain.repository.ImageRepository
 import java.util.UUID
 
 data class UserModel(
-    val userID: String = UUID.randomUUID().toString(),
-    val fullName: String,
-    val email: String,
-    val phoneNum: String,
-    val password: String,
+    var userID: String = UUID.randomUUID().toString(),
+    var fullName: String,
+    var email: String,
+    var phoneNum: String,
+    var password: String,
     val isCustomer: Boolean = true
 ){
     suspend fun getProfilePicture(
