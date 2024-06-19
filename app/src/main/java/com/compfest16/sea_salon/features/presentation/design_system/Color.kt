@@ -13,6 +13,7 @@ val Pink40 = Color(0xFF7D5260)
 val CompfestBlack = Color(0xFF121212)
 val ComfestDarkGrey = Color(0xFF212121)
 val CompfestGrey = Color(0xFF303030)
+val CompfestBlueGrey = Color(0xFF222227)
 val CompfestLightGrey = Color(0xFF424242)
 val CompfestWhite = Color(0xFFFFFFFF)
 

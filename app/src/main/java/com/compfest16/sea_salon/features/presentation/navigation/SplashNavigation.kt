@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
+import com.compfest16.sea_salon.features.presentation.screen.auth_section.Login
+import com.compfest16.sea_salon.features.presentation.screen.auth_section.SignUp
 import com.compfest16.sea_salon.features.presentation.screen.auth_section.Splash1
 import com.compfest16.sea_salon.features.presentation.screen.auth_section.Splash2
 import com.compfest16.sea_salon.features.presentation.screen.auth_section.Splash3
@@ -74,6 +76,30 @@ fun SplashNavigation(){
             )
         }){
             Splash4(splashController)
+        }
+
+        composable(SplashNav.Login.route, enterTransition = {
+            return@composable slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left, tween(700)
+            )
+        }, popExitTransition = {
+            return@composable slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right, tween(700)
+            )
+        }){
+            Login(splashController)
+        }
+
+        composable(SplashNav.SignUp.route, enterTransition = {
+            return@composable slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left, tween(700)
+            )
+        }, popExitTransition = {
+            return@composable slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right, tween(700)
+            )
+        }){
+            SignUp(splashController)
         }
     }
 }

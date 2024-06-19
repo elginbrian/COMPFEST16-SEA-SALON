@@ -51,7 +51,7 @@ fun Splash4(splashController: NavHostController = rememberNavController()) {
         loadProgress {
             currentProgress.value = it
         }
-
+        splashController.navigate(SplashNav.Login.route)
     }
 
     Scaffold(
@@ -77,8 +77,7 @@ fun Splash4(splashController: NavHostController = rememberNavController()) {
         containerColor = CompfestBlack,
     ){
         Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 36.dp)){
+            .fillMaxSize()){
             Image(painter = painterResource(id = R.drawable.splash4), contentDescription = "background", contentScale = ContentScale.Crop)
         }
 
