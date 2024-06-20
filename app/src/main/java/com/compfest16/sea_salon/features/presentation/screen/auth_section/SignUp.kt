@@ -2,6 +2,7 @@ package com.compfest16.sea_salon.features.presentation.screen.auth_section
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -133,8 +135,11 @@ fun SignUp(
                 imageModel.value.affiliateID = userModel.value.userID
 
                 viewModel.signUp(userModel.value, imageModel.value){
-                    Log.d("Screen", it.toString())
+                    Toast.makeText(splashController.context, it, Toast.LENGTH_SHORT).show()
                 }
+
+                userModel.value = UserDummy.empty
+                imageModel.value = ImageDummy.notFound
             }
         }
 

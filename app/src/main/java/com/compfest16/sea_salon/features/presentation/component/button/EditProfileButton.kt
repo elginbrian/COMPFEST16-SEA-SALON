@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.compfest16.sea_salon.features.domain.dummy.ImageDummy
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 
 @Preview
@@ -32,7 +33,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurp
 fun EditProfileButton(
     color: Color = CompfestPurple,
     onClick: (Uri) -> Unit = {}
-){
+) {
     val selectedImageUri = remember { mutableStateOf<Uri?>(Uri.EMPTY) }
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -43,23 +44,36 @@ fun EditProfileButton(
         }
     )
 
-    Card(modifier = Modifier
-        .size(100.dp),
+    Card(
+        modifier = Modifier.size(100.dp),
         colors = CardDefaults.cardColors(color),
         border = BorderStroke(2.dp, color),
         shape = CircleShape
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .clickable {
-                singlePhotoPickerLauncher.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    singlePhotoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (selectedImageUri.value != Uri.EMPTY) {
+                AsyncImage(
+                    model = selectedImageUri.value,
+                    contentDescription = "profile",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
-            }, contentAlignment = Alignment.Center){
-            if(selectedImageUri.value != Uri.EMPTY){
-                AsyncImage(model = selectedImageUri, contentDescription = "profile", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
             }
-            Icon(imageVector = Icons.Default.Add, contentDescription = "profile", tint = Color.White, modifier = Modifier.size(40.dp))
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "profile",
+                tint = Color.White,
+                modifier = Modifier.size(40.dp)
+            )
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.compfest16.sea_salon.features.presentation.screen.auth_section
 
 import android.annotation.SuppressLint
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +25,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,6 +51,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
+import org.koin.androidx.compose.getViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -55,7 +59,11 @@ import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
 fun Login(
     splashController: NavController = rememberNavController()
 ){
-    val login = remember{ mutableStateOf(false) }
+    val viewModel  = getViewModel<AuthViewModel>()
+    val login      = remember{ mutableStateOf(false) }
+    val email      = remember{ mutableStateOf("") }
+    val password   = remember{ mutableStateOf("") }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -73,13 +81,36 @@ fun Login(
             .padding(horizontal = 32.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center) {
             Text(text = "Greetings!", fontSize = 42.sp, color = CompfestWhite, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(32.dp))
-            SingleLineTextField(title = "Email", painter = painterResource(id = R.drawable.email), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
-            SecureLineTextField(title = "Password", painter = painterResource(id = R.drawable.password))
+
+            SingleLineTextField(
+                title = "Email",
+                painter = painterResource(id = R.drawable.email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                value = email.value,
+                onValueChange = {
+                    email.value = it
+                }
+            )
+            SecureLineTextField(
+                title = "Password",
+                painter = painterResource(id = R.drawable.password),
+                value = password.value,
+                onValueChange = {
+                    password.value = it
+                }
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "Forgot Password?", fontSize = 14.sp, color = CompfestWhite)
             Spacer(modifier = Modifier.height(16.dp))
             RoundedBarButton(text = "Login"){
+                viewModel.login(email.value, password.value){
+                    Toast.makeText(splashController.context, it, Toast.LENGTH_SHORT).show()
+                }
+
                 login.value = true
+                email.value = ""
+                password.value = ""
             }
         }
 

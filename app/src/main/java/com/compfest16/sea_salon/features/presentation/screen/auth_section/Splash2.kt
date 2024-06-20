@@ -90,8 +90,9 @@ fun Splash2(navController: NavController = rememberNavController()){
 }
 
 suspend fun loadProgress(updateProgress: (Float) -> Unit) {
-    for (i in 1..100) {
-        updateProgress(i.toFloat() / 100)
-        delay(80)
+    val steps = 1000
+    for (i in 1..steps) {
+        updateProgress(i.toFloat() / steps)
+        delay(10)
     }
 }

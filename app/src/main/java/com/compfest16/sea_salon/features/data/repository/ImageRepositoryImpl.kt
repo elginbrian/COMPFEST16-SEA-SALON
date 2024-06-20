@@ -11,6 +11,9 @@ import com.google.firebase.storage.storage
 import com.google.firebase.storage.storageMetadata
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class ImageRepositoryImpl: ImageRepository {
     val db  = Firebase.storage.reference
@@ -47,40 +50,46 @@ class ImageRepositoryImpl: ImageRepository {
     override suspend fun PostImage(image: ImageModel): Flow<String> {
         return flow {
             try {
-                var messege = ""
-                db.child("${image.getRole()}/${image.affiliateID}/${image.imageID}").putFile(image.src, metadata).addOnProgressListener {
-                    messege = "Uploading " + (100 * it.bytesTransferred / it.totalByteCount).toInt().toString() + "%"
-                }.addOnSuccessListener {
-                    messege = "Image Uploaded Successfully"
-                }.addOnFailureListener{
-                    messege = it.message.toString()
+                val message = suspendCancellableCoroutine<String> { continuation ->
+                    db.child("${image.getRole()}/${image.affiliateID}/${image.imageID}").putFile(image.src, metadata)
+                        .addOnProgressListener {
+                            val progress = "Uploading " + (100 * it.bytesTransferred / it.totalByteCount).toInt().toString() + "%"
+                            Log.d("Image", "Upload Image: $progress%")
+                        }
+                        .addOnSuccessListener {
+                            continuation.resume("Image Uploaded Successfully")
+                        }
+                        .addOnFailureListener { exception ->
+                            continuation.resumeWithException(exception)
+                        }
                 }
-                emit(messege)
-                return@flow
-            } catch (e: Exception){
+                emit(message)
+            } catch (e: Exception) {
                 emit(e.message.toString())
                 Log.d("Image", e.message.toString())
-                return@flow
             }
         }
     }
 
+
     override suspend fun DeleteImage(imageID: String, affiliateID: String, role: String): Flow<String> {
         return flow {
             try {
-                var messege = ""
-                db.child("$role/$affiliateID/$imageID").delete().addOnSuccessListener {
-                    messege = "Image Deleted Successfully"
-                }.addOnFailureListener{
-                    messege = it.message.toString()
+                val message = suspendCancellableCoroutine<String> { continuation ->
+                    db.child("$role/$affiliateID/$imageID").delete()
+                        .addOnSuccessListener {
+                            continuation.resume("Image Deleted Successfully")
+                        }
+                        .addOnFailureListener { exception ->
+                            continuation.resumeWithException(exception)
+                        }
                 }
-                emit(messege)
-                return@flow
-            } catch (e: Exception){
+                emit(message)
+            } catch (e: Exception) {
                 emit(e.message.toString())
                 Log.d("Image", e.message.toString())
-                return@flow
             }
         }
     }
+
 }
