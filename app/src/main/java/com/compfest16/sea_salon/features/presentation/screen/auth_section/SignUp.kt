@@ -42,6 +42,7 @@ import com.compfest16.sea_salon.features.presentation.component.textfield.Single
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
@@ -58,6 +59,7 @@ fun SignUp(
     val signUp     = remember { mutableStateOf(false) }
     val imageModel = remember { mutableStateOf(ImageDummy.notFound) }
     val userModel  = remember { mutableStateOf(UserDummy.empty) }
+    val message    = remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier
@@ -134,8 +136,9 @@ fun SignUp(
                 userModel.value.userID = UUID.randomUUID().toString()
                 imageModel.value.affiliateID = userModel.value.userID
 
+                message.value = "Verifying..."
                 viewModel.signUp(userModel.value, imageModel.value){
-                    Toast.makeText(splashController.context, it, Toast.LENGTH_SHORT).show()
+                    message.value = it
                 }
 
                 userModel.value = UserDummy.empty
@@ -155,6 +158,8 @@ fun SignUp(
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
             if(signUp.value){
+                Text(text = message.value, fontSize = 14.sp, color = CompfestWhite)
+                Spacer(modifier = Modifier.height(16.dp))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = CompfestAqua, trackColor = CompfestGrey)
             }
         }

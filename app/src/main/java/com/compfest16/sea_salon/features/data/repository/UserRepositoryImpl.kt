@@ -35,7 +35,7 @@ class UserRepositoryImpl : UserRepository {
                             auth.currentUser?.updateProfile(updateProfile)?.addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     Log.d("SignUp", "SignUp Success")
-                                    continuation.resume("SignUp Success")
+                                    continuation.resume("SignUp Success, adding user to Firestore...")
                                 } else {
                                     val errorMsg = task.exception?.message.toString()
                                     Log.d("SignUp", errorMsg)
@@ -64,7 +64,7 @@ class UserRepositoryImpl : UserRepository {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnSuccessListener {
                             Log.d("Login", "Login Success")
-                            continuation.resume("Login Success")
+                            continuation.resume("Login Success, redirecting to homepage...")
                         }
                         .addOnFailureListener { exception ->
                             Log.d("Login", exception.message.toString())
@@ -128,8 +128,8 @@ class UserRepositoryImpl : UserRepository {
                 val message = suspendCancellableCoroutine<String> { continuation ->
                     db.collection("user").document(user.userID).set(user.toHashMap())
                         .addOnSuccessListener {
-                            Log.d("User", "User Registered Successfully")
-                            continuation.resume("User Registered Successfully")
+                            Log.d("User", "User Added to Firestore, uploading image...")
+                            continuation.resume("User Added to Firestore, uploading image...")
                         }
                         .addOnFailureListener { exception ->
                             Log.d("User", exception.message.toString())

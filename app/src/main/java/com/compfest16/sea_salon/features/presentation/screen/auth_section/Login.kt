@@ -48,6 +48,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
@@ -63,6 +64,7 @@ fun Login(
     val login      = remember{ mutableStateOf(false) }
     val email      = remember{ mutableStateOf("") }
     val password   = remember{ mutableStateOf("") }
+    val message    = remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier
@@ -104,13 +106,14 @@ fun Login(
             Text(text = "Forgot Password?", fontSize = 14.sp, color = CompfestWhite)
             Spacer(modifier = Modifier.height(16.dp))
             RoundedBarButton(text = "Login"){
-                viewModel.login(email.value, password.value){
-                    Toast.makeText(splashController.context, it, Toast.LENGTH_SHORT).show()
-                }
-
                 login.value = true
                 email.value = ""
                 password.value = ""
+
+                message.value = "Verifying..."
+                viewModel.login(email.value, password.value){
+                    message.value = it
+                }
             }
         }
 
@@ -126,6 +129,8 @@ fun Login(
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
             if(login.value){
+                Text(text = message.value, fontSize = 14.sp, color = CompfestWhite)
+                Spacer(modifier = Modifier.height(16.dp))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = CompfestPurple, trackColor = CompfestGrey)
             }
         }
