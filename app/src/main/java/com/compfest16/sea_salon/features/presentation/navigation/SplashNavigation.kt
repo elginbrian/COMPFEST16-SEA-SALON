@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,7 +27,7 @@ sealed class SplashNav(val route: String){
 }
 
 @Composable
-fun SplashNavigation(){
+fun SplashNavigation(mainController: NavHostController) {
     val splashController = rememberNavController()
     NavHost(navController = splashController, startDestination = SplashNav.Splash1.route, modifier = Modifier.background(
         CompfestBlack)){
@@ -87,7 +88,7 @@ fun SplashNavigation(){
                 AnimatedContentTransitionScope.SlideDirection.Right, tween(700)
             )
         }){
-            Login(splashController)
+            Login(splashController, mainController)
         }
 
         composable(SplashNav.SignUp.route, enterTransition = {
@@ -99,7 +100,7 @@ fun SplashNavigation(){
                 AnimatedContentTransitionScope.SlideDirection.Right, tween(700)
             )
         }){
-            SignUp(splashController)
+            SignUp(splashController, mainController)
         }
     }
 }

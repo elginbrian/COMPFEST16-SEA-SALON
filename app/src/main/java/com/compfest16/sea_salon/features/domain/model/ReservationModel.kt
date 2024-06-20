@@ -1,7 +1,12 @@
 package com.compfest16.sea_salon.features.domain.model
 
+import androidx.compose.ui.graphics.Color
 import com.compfest16.sea_salon.features.domain.repository.BranchRepository
 import com.compfest16.sea_salon.features.domain.repository.UserRepository
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestLightGrey
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import java.util.UUID
 
 data class ReservationModel(
@@ -19,6 +24,16 @@ data class ReservationModel(
             else -> "Custom"
         }
     }
+
+    fun getHistoryColor(): Color{
+        return when(reservationType){
+            1 -> CompfestPurple
+            2 -> CompfestAqua
+            3 -> CompfestPink
+            else -> CompfestLightGrey
+        }
+    }
+
     suspend fun getUser(
         repository: UserRepository,
         onSuccess: (UserModel) -> Unit

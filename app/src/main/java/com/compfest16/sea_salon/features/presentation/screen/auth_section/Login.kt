@@ -1,8 +1,6 @@
 package com.compfest16.sea_salon.features.presentation.screen.auth_section
 
 import android.annotation.SuppressLint
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,18 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,32 +32,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.R
 import com.compfest16.sea_salon.features.presentation.component.button.RoundedBarButton
 import com.compfest16.sea_salon.features.presentation.component.textfield.SecureLineTextField
 import com.compfest16.sea_salon.features.presentation.component.textfield.SingleLineTextField
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
-import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
-import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.compfest16.sea_salon.features.presentation.navigation.MainNav
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.getViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun Login(
-    splashController: NavController = rememberNavController()
+    splashController: NavController = rememberNavController(),
+    mainController: NavHostController = rememberNavController()
 ){
     val viewModel  = getViewModel<AuthViewModel>()
     val login      = remember{ mutableStateOf(false) }
     val email      = remember{ mutableStateOf("") }
     val password   = remember{ mutableStateOf("") }
     val message    = remember { mutableStateOf("") }
+
+    if(message.value.equals("Login Success, redirecting to homepage...")){
+        LaunchedEffect(Unit){
+            delay(2000)
+            mainController.navigate(MainNav.Main.route)
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -107,13 +109,14 @@ fun Login(
             Spacer(modifier = Modifier.height(16.dp))
             RoundedBarButton(text = "Login"){
                 login.value = true
-                email.value = ""
-                password.value = ""
 
                 message.value = "Verifying..."
                 viewModel.login(email.value, password.value){
                     message.value = it
                 }
+
+                email.value = ""
+                password.value = ""
             }
         }
 

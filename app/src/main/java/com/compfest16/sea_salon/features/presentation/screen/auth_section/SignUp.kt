@@ -1,8 +1,6 @@
 package com.compfest16.sea_salon.features.presentation.screen.auth_section
 
 import android.annotation.SuppressLint
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +16,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.R
 import com.compfest16.sea_salon.features.domain.dummy.ImageDummy
@@ -42,10 +41,11 @@ import com.compfest16.sea_salon.features.presentation.component.textfield.Single
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
-import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.compfest16.sea_salon.features.presentation.navigation.MainNav
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.getViewModel
 import java.util.UUID
 
@@ -53,13 +53,23 @@ import java.util.UUID
 @Composable
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun SignUp(
-    splashController: NavController = rememberNavController()
+    splashController: NavController = rememberNavController(),
+    mainController: NavHostController = rememberNavController()
 ){
     val viewModel  = getViewModel<AuthViewModel>()
     val signUp     = remember { mutableStateOf(false) }
     val imageModel = remember { mutableStateOf(ImageDummy.notFound) }
     val userModel  = remember { mutableStateOf(UserDummy.empty) }
     val message    = remember { mutableStateOf("") }
+
+    if(message.value.equals("Image Uploaded Successfully")){
+        LaunchedEffect(Unit){
+            delay(1000)
+            message.value = "Redirecting to homepage..."
+            delay(1000)
+            mainController.navigate(MainNav.Main.route)
+        }
+    }
 
     Scaffold(
         modifier = Modifier
