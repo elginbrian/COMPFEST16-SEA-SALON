@@ -12,6 +12,7 @@ import com.compfest16.sea_salon.di.Module
 import com.compfest16.sea_salon.features.presentation.design_system.SEASalonTheme
 import com.compfest16.sea_salon.features.presentation.navigation.MainNavigation
 import com.compfest16.sea_salon.features.presentation.screen.auth_section.AuthViewModel
+import com.compfest16.sea_salon.features.presentation.screen.nearby_section.Nearby
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -28,7 +29,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SEASalonTheme {
-                MainNavigation()
+                //MainNavigation()
+                Nearby()
             }
         }
     }

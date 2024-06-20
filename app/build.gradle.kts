@@ -84,10 +84,24 @@ dependencies {
 
     // Accompanist
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.permissions.v0350alpha)
 
     // CameraX
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+
+    // Google maps
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+
+    // Google maps for compose
+    implementation(libs.maps.compose)
+
+    // KTX for the Maps SDK for Android
+    implementation(libs.maps.ktx)
+
+    // KTX for the Maps SDK for Android Utility Library
+    implementation(libs.maps.utils.ktx)
 }
