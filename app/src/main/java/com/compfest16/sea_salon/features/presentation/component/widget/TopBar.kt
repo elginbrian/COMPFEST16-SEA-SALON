@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,12 +34,14 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestLigh
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 @Preview
 fun TopBar(
-    profilePicture: Uri = Uri.EMPTY,
-    userName: String = "Lorem Ipsum",
+    profilePicture: Uri = Firebase.auth.currentUser?.photoUrl ?: Uri.EMPTY,
+    userName: String = Firebase.auth.currentUser?.displayName ?: "SEA Salon",
     onClick: () -> Unit = {}
 ){
     Card(
@@ -61,11 +64,14 @@ fun TopBar(
                     shape = CircleShape,
                     colors = CardDefaults.cardColors(CompfestLightGrey)
                 ) {
-                    AsyncImage(model = profilePicture, contentDescription = "profile-picture", modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
-                            onClick()
-                        }, contentScale = ContentScale.Crop)
+                    Box(modifier = Modifier.fillMaxSize()){
+                        AsyncImage(model = profilePicture, contentDescription = "profile-picture", modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                onClick()
+                            }, contentScale = ContentScale.Crop)
+                    }
+
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = userName, color = CompfestWhite, fontSize = 16.sp, modifier = Modifier.clickable {

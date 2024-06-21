@@ -14,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 sealed class MainNav(val route: String){
     object Main: MainNav("main")
@@ -24,8 +26,7 @@ sealed class MainNav(val route: String){
 @Composable
 fun MainNavigation(){
     val mainController = rememberNavController()
-    NavHost(navController = mainController, startDestination = MainNav.Splash.route, modifier = Modifier.background(
-        CompfestBlack)){
+    NavHost(navController = mainController, startDestination = MainNav.Splash.route, modifier = Modifier.background(CompfestBlack)){
         composable(MainNav.Splash.route, enterTransition = {
             return@composable fadeIn(tween(700))
         }, popExitTransition = {

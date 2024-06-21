@@ -64,8 +64,6 @@ fun BranchCard(
             }
 
             Row(modifier = Modifier.fillMaxSize().padding(end = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End){
-                Text(text = "4.2", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                Spacer(modifier = Modifier.width(4.dp))
                 androidx.compose.material3.Icon(imageVector = Icons.Default.Star, contentDescription = "Star", tint = CompfestPink, modifier = Modifier.size(24.dp))
             }
         }

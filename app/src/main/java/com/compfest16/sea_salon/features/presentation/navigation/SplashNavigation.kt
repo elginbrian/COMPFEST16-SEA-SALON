@@ -40,7 +40,7 @@ fun SplashNavigation(mainController: NavHostController) {
                 AnimatedContentTransitionScope.SlideDirection.Right, tween(700)
             )
         }){
-            Splash1(splashController)
+            Splash1(splashController, mainController)
         }
 
         composable(SplashNav.Splash2.route, enterTransition = {

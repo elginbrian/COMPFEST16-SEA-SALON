@@ -1,6 +1,7 @@
 package com.compfest16.sea_salon.features.data.mapper
 
 import com.compfest16.sea_salon.features.domain.model.BranchModel
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 fun BranchModel.toHashMap(): HashMap<String, Any>{
@@ -16,13 +17,23 @@ fun BranchModel.toHashMap(): HashMap<String, Any>{
     return map
 }
 
-fun QueryDocumentSnapshot.toBranchModel(): BranchModel{
+fun DocumentSnapshot.toBranchModel(): BranchModel {
+    val branchID = getString("branch_id") ?: ""
+    val branchName = getString("branch_name") ?: ""
+    val branchAddress = getString("branch_address") ?: ""
+    val coordinates = get("branch_coordinate") as? Map<*, *>
+    val latitude = coordinates?.get("first") as? Double ?: 0.0
+    val longitude = coordinates?.get("second") as? Double ?: 0.0
+    val branchCoordinates = Pair(latitude, longitude)
+    val openingHours = getString("opening_hours") ?: ""
+    val closingHours = getString("closing_hours") ?: ""
+
     return BranchModel(
-        branchID = this["branch_id"] as String,
-        branchName = this["branch_name"] as String,
-        branchAddress = this["branch_address"] as String,
-        branchCoordinates = this["branch_coordinate"] as Pair<Double, Double>,
-        openingHours = this["opening_hours"] as String,
-        closingHours = this["closing_hours"] as String
+        branchID = branchID,
+        branchName = branchName,
+        branchAddress = branchAddress,
+        branchCoordinates = branchCoordinates,
+        openingHours = openingHours,
+        closingHours = closingHours
     )
 }

@@ -12,6 +12,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
 
 class BranchRepositoryImpl: BranchRepository {
     private val db = Firebase.firestore
@@ -19,19 +22,38 @@ class BranchRepositoryImpl: BranchRepository {
     override suspend fun GetBranches(): Flow<List<BranchModel>> {
         return flow {
             try {
-                val query = db.collection("branch").get()
-                val result = mutableListOf<BranchModel>()
-
-                for (document in query.result){
-                    result.add(document.toBranchModel())
+                val result = suspendCancellableCoroutine<MutableList<BranchModel>> { continuation ->
+                    db.collection("branch").get().addOnSuccessListener { querySnapshot ->
+                        try {
+                            Log.d("Branch", "Successfully fetched branches: ${querySnapshot.documents.size} documents")
+                            val innerResult = mutableListOf<BranchModel>()
+                            for (document in querySnapshot.documents) {
+                                innerResult.add(document.toBranchModel())
+                            }
+                            Log.d("Branch", "Parsed branch models: $innerResult")
+                            continuation.resume(innerResult)
+                        } catch (e: Exception) {
+                            val error = BranchDummy.notFound.apply {
+                                branchName = e.message ?: "Unknown error"
+                            }
+                            Log.e("Branch", "Error parsing documents: ${e.message}", e)
+                            continuation.resume(mutableListOf(error))
+                        }
+                    }.addOnFailureListener { exception ->
+                        val error = BranchDummy.notFound.apply {
+                            branchName = exception.message ?: "Unknown error"
+                        }
+                        Log.e("Branch", "Error fetching branches: ${exception.message}", exception)
+                        continuation.resume(mutableListOf(error))
+                    }
                 }
-                Log.d("Branch", result.toString())
                 emit(result)
-                return@flow
-            } catch (e: Exception){
-                emit(emptyList())
-                Log.d("Branch", e.message.toString())
-                return@flow
+            } catch (e: Exception) {
+                Log.e("Branch", "Exception in GetBranches flow: ${e.message}", e)
+                val error = BranchDummy.notFound.apply {
+                    branchName = e.message ?: "Unknown error"
+                }
+                emit(listOf(error))
             }
         }
     }

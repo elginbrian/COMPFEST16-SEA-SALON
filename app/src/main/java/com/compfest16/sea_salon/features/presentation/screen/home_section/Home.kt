@@ -31,19 +31,20 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.R
 import com.compfest16.sea_salon.features.domain.dummy.BranchDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReservationDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReviewDummy
-import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.presentation.component.widget.BranchCard
 import com.compfest16.sea_salon.features.presentation.component.widget.HistoryCard
 import com.compfest16.sea_salon.features.presentation.component.widget.ReviewCard
 import com.compfest16.sea_salon.features.presentation.component.widget.TopBar
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
-import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.compfest16.sea_salon.features.presentation.screen.test_section.Test
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -51,15 +52,11 @@ import java.time.format.DateTimeFormatter
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
-fun Home(){
+fun Home(bottomController: NavHostController = rememberNavController()) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            Box(modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 42.dp)){
-                TopBar()
-            }
+
         },
         contentColor = CompfestBlack,
         containerColor = CompfestBlack
@@ -145,7 +142,7 @@ fun Home(){
             }
 
             item {
-                Spacer(modifier = Modifier.height(64.dp))
+                Spacer(modifier = Modifier.height(160.dp))
             }
         }
     }

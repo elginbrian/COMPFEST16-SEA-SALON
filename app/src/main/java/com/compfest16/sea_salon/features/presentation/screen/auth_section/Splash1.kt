@@ -10,37 +10,42 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.R
-import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
+import com.compfest16.sea_salon.features.presentation.navigation.MainNav
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun Splash1(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    mainController: NavHostController = rememberNavController()
 ){
     LaunchedEffect(key1 = true){
         delay(3000)
-        navController.navigate(SplashNav.Splash2.route)
+        if(Firebase.auth.currentUser != null){
+            mainController.navigate(MainNav.Main.route)
+        } else {
+            navController.navigate(SplashNav.Splash2.route)
+        }
     }
     
     Scaffold(
