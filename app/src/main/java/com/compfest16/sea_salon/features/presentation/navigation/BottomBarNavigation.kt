@@ -32,12 +32,10 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhit
 import com.compfest16.sea_salon.features.presentation.screen.home_section.Home
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.Nearby
 import com.compfest16.sea_salon.R
-import com.compfest16.sea_salon.features.presentation.screen.nearby_section.StreetView
 
 sealed class BottomBarNav(val route: String){
     object Home : BottomBarNav("home")
     object Nearby : BottomBarNav("nearby")
-    object StreetView : BottomBarNav("street_view")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -100,18 +98,6 @@ fun BottomBarNavigation(mainController: NavHostController) {
                 )
             }){
                 Nearby(bottomController)
-            }
-            
-            composable(BottomBarNav.StreetView.route, enterTransition = {
-                return@composable slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
-                )
-            }, popExitTransition = {
-                return@composable slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
-                )
-            }){
-                StreetView()
             }
         }
     }

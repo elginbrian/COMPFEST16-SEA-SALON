@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,6 +56,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
+import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -68,9 +70,11 @@ import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.ktx.MapsExperimentalFeature
 import kotlinx.coroutines.flow.update
 import org.koin.androidx.compose.getViewModel
 
+@OptIn(MapsExperimentalFeature::class)
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
@@ -88,6 +92,8 @@ fun Nearby(
     val message    = remember { mutableStateOf("") }
     val branchList = remember { mutableStateOf(listOf<BranchModel>()) }
     val closestBranch = remember { mutableStateOf(Pair(BranchDummy.malang, 0.0)) }
+    val isStreetView = remember { mutableStateOf(false) }
+    val selectedCoordinates = remember { mutableStateOf(closestBranch.value.first) }
 
     viewModel.getNearbyBranches {
         branchList.value = it
@@ -125,6 +131,8 @@ fun Nearby(
         },
         onPermissionsRevoked = {
             Log.d("Nearby", "Permission revoked")
+            bottomController.navigate(BottomBarNav.Home.route)
+            message.value = "Location permission revoked"
         }
     )
 
@@ -145,7 +153,7 @@ fun Nearby(
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                BranchCard(branchModel = closestBranch.value.first)
+                BranchCard(branchModel = selectedCoordinates.value)
                 Spacer(modifier = Modifier.height(8.dp))
                 RoundedBarButton(text = "Book Reservation")
                 Spacer(modifier = Modifier.height(140.dp))
@@ -158,69 +166,88 @@ fun Nearby(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ){
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                properties = properties.value,
-                uiSettings = uiSettings.value,
-            ){
-                MarkerInfoWindow(
-                    state = MarkerState(position = LatLng(currentLocation.value.first, currentLocation.value.second)),
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.mylocation)
-                ) {
-                    Column {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .border(
-                                    BorderStroke(1.dp, CompfestBlueGrey),
-                                    RoundedCornerShape(24.dp)
-                                )
-                                .clip(RoundedCornerShape(24.dp))
-                                .background(
-                                    Brush.horizontalGradient(
-                                        listOf(
-                                            CompfestPink,
-                                            CompfestAqua
+            if(isStreetView.value){
+                com.google.maps.android.compose.streetview.StreetView(
+                    streetViewPanoramaOptionsFactory = {
+                        StreetViewPanoramaOptions().position(
+                            LatLng(
+                                selectedCoordinates.value.branchCoordinates.first,
+                                selectedCoordinates.value.branchCoordinates.second
+                            )
+                        )
+                    },
+                    isPanningGesturesEnabled = true,
+                    isStreetNamesEnabled = true,
+                    isUserNavigationEnabled = true,
+                    isZoomGesturesEnabled = true
+                )
+
+            } else {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    properties = properties.value,
+                    uiSettings = uiSettings.value,
+                ){
+                    MarkerInfoWindow(
+                        state = MarkerState(position = LatLng(currentLocation.value.first, currentLocation.value.second)),
+                        icon = BitmapDescriptorFactory.fromResource(R.drawable.mylocation)
+                    ) {
+                        Column {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .border(
+                                        BorderStroke(1.dp, CompfestBlueGrey),
+                                        RoundedCornerShape(24.dp)
+                                    )
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .background(
+                                        Brush.horizontalGradient(
+                                            listOf(
+                                                CompfestPink,
+                                                CompfestAqua
+                                            )
                                         )
                                     )
-                                )
-                                .padding(20.dp)
-                        ) {
-                            Text("Your Location", fontWeight = FontWeight.Bold, color = Color.White)
-                            Text("Closes Branch: ${closestBranch.value.first.branchName}", fontWeight = FontWeight.Normal, color = Color.White)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-
-                branchList.value.forEach{branch ->
-                    Marker(
-                        state = MarkerState(position = LatLng(branch.branchCoordinates.first, branch.branchCoordinates.second)),
-                        title = branch.branchName,
-                        snippet = branch.branchAddress,
-                        onInfoWindowClick = {
-                            val latitude = branch.branchCoordinates.first
-                            val longitude = branch.branchCoordinates.second
-                            viewModel._selectedCoordinates.update {
-                                LatLng(latitude, longitude)
+                                    .padding(20.dp)
+                            ) {
+                                Text("Your Location", fontWeight = FontWeight.Bold, color = Color.White)
+                                Text("Closes Branch: ${closestBranch.value.first.branchName}", fontWeight = FontWeight.Normal, color = Color.White)
                             }
-                            bottomController.navigate(BottomBarNav.StreetView.route)
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
-                    )
-                }
+                    }
 
-                Polyline(
-                    points = listOf(
-                        LatLng(currentLocation.value.first, currentLocation.value.second),
-                        LatLng(closestBranch.value.first.branchCoordinates.first, closestBranch.value.first.branchCoordinates.second)
-                    ),
-                    clickable = true,
-                    color = CompfestAqua,
-                    width = 5f
-                )
+                    branchList.value.forEach{branch ->
+                        Marker(
+                            state = MarkerState(position = LatLng(branch.branchCoordinates.first, branch.branchCoordinates.second)),
+                            title = branch.branchName,
+                            snippet = branch.branchAddress,
+                            onInfoWindowClick = {
+                                selectedCoordinates.value = branch
+                                isStreetView.value = true
+                            },
+                            onClick = {
+                                selectedCoordinates.value = branch
+                                Toast.makeText(context, "Click the white card to open StreetView", Toast.LENGTH_SHORT).show()
+                                false
+                            }
+                        )
+                    }
+
+                    Polyline(
+                        points = listOf(
+                            LatLng(currentLocation.value.first, currentLocation.value.second),
+                            LatLng(closestBranch.value.first.branchCoordinates.first, closestBranch.value.first.branchCoordinates.second)
+                        ),
+                        clickable = true,
+                        color = CompfestAqua,
+                        width = 5f
+                    )
             }
+        }
 
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
                 Text(text = message.value, fontSize = 14.sp, color = CompfestWhite)
