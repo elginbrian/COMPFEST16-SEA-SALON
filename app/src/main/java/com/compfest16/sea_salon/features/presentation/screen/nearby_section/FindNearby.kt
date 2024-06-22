@@ -18,6 +18,14 @@ fun findClosestBranch(currentLat: Double, currentLon: Double, branches: List<Bra
     return Pair(closestBranch, shortestDistance)
 }
 
+fun find3ClosestBranches(currentLat: Double, currentLon: Double, branches: List<BranchModel>): List<Pair<BranchModel, Double>> {
+    return branches.map { branch ->
+        val distance = distanceInKm(currentLat, currentLon, branch.branchCoordinates.first, branch.branchCoordinates.second)
+        branch to distance
+    }.sortedBy { it.second }
+        .take(3)
+}
+
 fun distanceInKm(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val radiusOfEarth = 6371 // Earth's radius in kilometers
     val latDistance = Math.toRadians(lat2 - lat1)

@@ -2,6 +2,7 @@ package com.compfest16.sea_salon.features.presentation.screen.home_section
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,9 +23,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
@@ -37,6 +41,7 @@ import com.compfest16.sea_salon.R
 import com.compfest16.sea_salon.features.domain.dummy.BranchDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReservationDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReviewDummy
+import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.presentation.component.widget.BranchCard
 import com.compfest16.sea_salon.features.presentation.component.widget.HistoryCard
 import com.compfest16.sea_salon.features.presentation.component.widget.ReviewCard
@@ -44,7 +49,18 @@ import com.compfest16.sea_salon.features.presentation.component.widget.TopBar
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
+import com.compfest16.sea_salon.features.presentation.screen.nearby_section.NearbyViewModel
+import com.compfest16.sea_salon.features.presentation.screen.nearby_section.RequestLocationPermission
+import com.compfest16.sea_salon.features.presentation.screen.nearby_section.find3ClosestBranches
+import com.compfest16.sea_salon.features.presentation.screen.nearby_section.findClosestBranch
+import com.compfest16.sea_salon.features.presentation.screen.nearby_section.getCurrentLocation
+import com.compfest16.sea_salon.features.presentation.screen.nearby_section.initializeLocationProvider
 import com.compfest16.sea_salon.features.presentation.screen.test_section.Test
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.rememberCameraPositionState
+import org.koin.androidx.compose.getViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -53,6 +69,54 @@ import java.time.format.DateTimeFormatter
 @Composable
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun Home(bottomController: NavHostController = rememberNavController()) {
+
+    val viewModel = getViewModel<HomeViewModel>()
+    val context = LocalContext.current
+    val currentLocation = remember { mutableStateOf(BranchDummy.malang.branchCoordinates) }
+    val isLoading  = remember { mutableStateOf(true) }
+    val message    = remember { mutableStateOf("") }
+    val branchList = remember { mutableStateOf(listOf<BranchModel>()) }
+    val closestBranch = remember { mutableStateOf(listOf(Pair(BranchDummy.malang, 0.0))) }
+
+    viewModel.getNearbyBranches {
+        branchList.value = it
+        Log.d("BranchList", it.toString())
+        closestBranch.value = find3ClosestBranches(currentLocation.value.first, currentLocation.value.second, it)
+    }
+
+    RequestLocationPermission(
+        onPermissionGranted = {
+            Log.d("Nearby", "Permission granted")
+            message.value = "Getting your location..."
+            initializeLocationProvider(context)
+            getCurrentLocation(
+                onGetCurrentLocationSuccess = { location ->
+                    message.value = ""
+                    currentLocation.value = Pair(location.first, location.second)
+                    Log.d("Nearby", "Location: $location")
+                    closestBranch.value = find3ClosestBranches(currentLocation.value.first, currentLocation.value.second, branchList.value)
+                    isLoading.value = false
+                },
+                onGetCurrentLocationFailed = { exception ->
+                    Log.e("Nearby", "getLastLocation:exception", exception)
+                    message.value = "Failed to get your location"
+                    isLoading.value = false
+                },
+                context = context
+            )
+        },
+        onPermissionDenied = {
+            bottomController.navigate(BottomBarNav.Home.route)
+            message.value = "Location permission denied"
+            Log.d("Nearby", "Permission denied")
+            isLoading.value = false
+        },
+        onPermissionsRevoked = {
+            Log.d("Nearby", "Permission revoked")
+            message.value = "Location permission revoked"
+        }
+    )
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -111,11 +175,11 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                     .padding(top = 24.dp, bottom = 8.dp), color = CompfestWhite, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
             }
 
-            items(BranchDummy.list.subList(0, 3)){
+            items(closestBranch.value){
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)) {
-                    BranchCard(branchModel = it)
+                    BranchCard(branchModel = it.first)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }

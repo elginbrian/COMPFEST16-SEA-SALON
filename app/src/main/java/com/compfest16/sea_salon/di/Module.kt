@@ -13,6 +13,7 @@ import com.compfest16.sea_salon.features.domain.repository.UserRepository
 import com.compfest16.sea_salon.features.presentation.screen.auth_section.AuthViewModel
 import com.compfest16.sea_salon.features.presentation.screen.home_section.HomeViewModel
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.NearbyViewModel
+import com.compfest16.sea_salon.features.presentation.screen.reservation_section.ReservationViewModel
 import com.compfest16.sea_salon.features.presentation.screen.test_section.TestViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -28,8 +29,9 @@ object Module {
 
     val viewModel = module {
         viewModel { AuthViewModel(get(), get()) }
-        viewModel { HomeViewModel(get()) }
+        viewModel { HomeViewModel(get(), get()) }
         viewModel { NearbyViewModel(get()) }
+        viewModel { ReservationViewModel(get()) }
         viewModel { TestViewModel(get()) }
     }
 }

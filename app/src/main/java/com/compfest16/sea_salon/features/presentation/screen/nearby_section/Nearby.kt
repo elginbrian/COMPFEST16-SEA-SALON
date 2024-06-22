@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,6 +48,8 @@ import com.compfest16.sea_salon.features.domain.dummy.BranchDummy
 import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.presentation.component.button.RoundedBarButton
 import com.compfest16.sea_salon.features.presentation.component.widget.BranchCard
+import com.compfest16.sea_salon.features.presentation.component.widget.GoogleMapsDark
+import com.compfest16.sea_salon.features.presentation.component.widget.GoogleStreetView
 import com.compfest16.sea_salon.features.presentation.component.widget.TopBar
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
@@ -61,6 +64,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -70,6 +74,7 @@ import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import kotlinx.coroutines.flow.update
 import org.koin.androidx.compose.getViewModel
@@ -131,7 +136,6 @@ fun Nearby(
         },
         onPermissionsRevoked = {
             Log.d("Nearby", "Permission revoked")
-            bottomController.navigate(BottomBarNav.Home.route)
             message.value = "Location permission revoked"
         }
     )
@@ -167,86 +171,20 @@ fun Nearby(
             contentAlignment = Alignment.Center
         ){
             if(isStreetView.value){
-                com.google.maps.android.compose.streetview.StreetView(
-                    streetViewPanoramaOptionsFactory = {
-                        StreetViewPanoramaOptions().position(
-                            LatLng(
-                                selectedCoordinates.value.branchCoordinates.first,
-                                selectedCoordinates.value.branchCoordinates.second
-                            )
-                        )
-                    },
-                    isPanningGesturesEnabled = true,
-                    isStreetNamesEnabled = true,
-                    isUserNavigationEnabled = true,
-                    isZoomGesturesEnabled = true
-                )
+                GoogleStreetView(selectedCoordinates)
 
             } else {
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    properties = properties.value,
-                    uiSettings = uiSettings.value,
-                ){
-                    MarkerInfoWindow(
-                        state = MarkerState(position = LatLng(currentLocation.value.first, currentLocation.value.second)),
-                        icon = BitmapDescriptorFactory.fromResource(R.drawable.mylocation)
-                    ) {
-                        Column {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .border(
-                                        BorderStroke(1.dp, CompfestBlueGrey),
-                                        RoundedCornerShape(24.dp)
-                                    )
-                                    .clip(RoundedCornerShape(24.dp))
-                                    .background(
-                                        Brush.horizontalGradient(
-                                            listOf(
-                                                CompfestPink,
-                                                CompfestAqua
-                                            )
-                                        )
-                                    )
-                                    .padding(20.dp)
-                            ) {
-                                Text("Your Location", fontWeight = FontWeight.Bold, color = Color.White)
-                                Text("Closes Branch: ${closestBranch.value.first.branchName}", fontWeight = FontWeight.Normal, color = Color.White)
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
-
-                    branchList.value.forEach{branch ->
-                        Marker(
-                            state = MarkerState(position = LatLng(branch.branchCoordinates.first, branch.branchCoordinates.second)),
-                            title = branch.branchName,
-                            snippet = branch.branchAddress,
-                            onInfoWindowClick = {
-                                selectedCoordinates.value = branch
-                                isStreetView.value = true
-                            },
-                            onClick = {
-                                selectedCoordinates.value = branch
-                                Toast.makeText(context, "Click the white card to open StreetView", Toast.LENGTH_SHORT).show()
-                                false
-                            }
-                        )
-                    }
-
-                    Polyline(
-                        points = listOf(
-                            LatLng(currentLocation.value.first, currentLocation.value.second),
-                            LatLng(closestBranch.value.first.branchCoordinates.first, closestBranch.value.first.branchCoordinates.second)
-                        ),
-                        clickable = true,
-                        color = CompfestAqua,
-                        width = 5f
-                    )
-            }
+                GoogleMapsDark(
+                    cameraPositionState,
+                    properties,
+                    uiSettings,
+                    currentLocation,
+                    closestBranch,
+                    branchList,
+                    selectedCoordinates,
+                    isStreetView,
+                    context
+                )
         }
 
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
@@ -260,3 +198,6 @@ fun Nearby(
         }
     }
 }
+
+
+
