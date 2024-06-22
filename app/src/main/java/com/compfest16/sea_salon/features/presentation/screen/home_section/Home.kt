@@ -179,7 +179,10 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)) {
-                    BranchCard(branchModel = it.first)
+                    BranchCard(branchModel = it.first){
+                        val route = BottomBarNav.Reservation.createRoute(it)
+                        bottomController.navigate(route)
+                    }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }

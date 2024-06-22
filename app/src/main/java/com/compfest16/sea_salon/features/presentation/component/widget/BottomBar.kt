@@ -35,7 +35,7 @@ fun BottomBar(bottomController: NavHostController = rememberNavController()) {
     BottomAppBar(
         containerColor = CompfestBlueGrey,
         modifier = Modifier.height(96.dp),
-        tonalElevation = 8.dp
+        tonalElevation = 16.dp
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),

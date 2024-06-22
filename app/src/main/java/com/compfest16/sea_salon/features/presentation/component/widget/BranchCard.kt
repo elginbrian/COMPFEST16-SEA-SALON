@@ -1,5 +1,6 @@
 package com.compfest16.sea_salon.features.presentation.component.widget
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,8 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 @Composable
 @Preview
 fun BranchCard(
-    branchModel: BranchModel = BranchDummy.malang
+    branchModel: BranchModel = BranchDummy.malang,
+    onClick: (String) -> Unit = {}
 ){
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -48,7 +50,9 @@ fun BranchCard(
         colors = CardDefaults.cardColors(CompfestBlueGrey),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize()){
+        Box(modifier = Modifier.fillMaxSize().clickable {
+            onClick(branchModel.branchID)
+        }){
             Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
                 Card(modifier = Modifier.size(80.dp),
                     colors = CardDefaults.cardColors(CompfestGrey),

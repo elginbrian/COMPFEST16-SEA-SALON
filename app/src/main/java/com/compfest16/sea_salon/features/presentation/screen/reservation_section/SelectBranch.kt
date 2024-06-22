@@ -32,8 +32,10 @@ import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.presentation.component.widget.BranchCard
 import com.compfest16.sea_salon.features.presentation.component.widget.CityCard
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
 import org.koin.androidx.compose.getViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -54,7 +56,7 @@ fun SelectBranch(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(CompfestBlack, CompfestGrey))),
+            .background(Brush.verticalGradient(listOf(CompfestBlack, CompfestBlueGrey))),
         topBar = {
 
         },
@@ -102,7 +104,10 @@ fun SelectBranch(
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)) {
-                        BranchCard(branchModel = it)
+                        BranchCard(branchModel = it){
+                            val route = BottomBarNav.Reservation.createRoute(it)
+                            bottomController.navigate(route)
+                        }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }

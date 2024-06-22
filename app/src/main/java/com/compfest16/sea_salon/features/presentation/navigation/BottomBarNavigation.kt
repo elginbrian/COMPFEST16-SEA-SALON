@@ -22,6 +22,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlac
 import com.compfest16.sea_salon.features.presentation.screen.home_section.Home
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.Nearby
 import com.compfest16.sea_salon.features.presentation.component.widget.BottomBar
+import com.compfest16.sea_salon.features.presentation.screen.reservation_section.Reservation
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectBranch
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectCity
 
@@ -31,6 +32,9 @@ sealed class BottomBarNav(val route: String){
     object SelectCities : BottomBarNav("select_cities")
     object SelectBranches : BottomBarNav("select_branches/{city_index}") {
         fun createRoute(cityIndex: Int) = "select_branches/$cityIndex"
+    }
+    object Reservation : BottomBarNav("reservation/{branch_id}"){
+        fun createRoute(branchId: String) = "reservation/$branchId"
     }
 }
 
@@ -101,6 +105,19 @@ fun BottomBarNavigation(mainController: NavHostController) {
             }, arguments = listOf(navArgument("city_index") { type = NavType.IntType })
             ){
                 SelectBranch(bottomController)
+            }
+
+            composable(BottomBarNav.Reservation.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }, arguments = listOf(navArgument("branch_id") { type = NavType.StringType })
+            ){
+                Reservation(bottomController)
             }
         }
     }

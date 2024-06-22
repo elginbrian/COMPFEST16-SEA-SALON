@@ -104,4 +104,8 @@ dependencies {
 
     // KTX for the Maps SDK for Android Utility Library
     implementation(libs.maps.utils.ktx)
+
+    // Dialog
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:list:1.3.0")
 }

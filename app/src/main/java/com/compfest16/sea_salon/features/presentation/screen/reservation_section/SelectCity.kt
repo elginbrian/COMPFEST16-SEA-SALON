@@ -53,7 +53,7 @@ fun SelectCity(bottomController: NavHostController = rememberNavController()) {
     ){
         Box(modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(CompfestBlack, CompfestGrey)))){
+            .background(Brush.verticalGradient(listOf(CompfestBlack, CompfestBlueGrey)))){
             LazyColumn(modifier = Modifier.fillMaxSize()
             ){
                 item {
