@@ -31,7 +31,7 @@ object Module {
         viewModel { AuthViewModel(get(), get()) }
         viewModel { HomeViewModel(get(), get(), get()) }
         viewModel { NearbyViewModel(get()) }
-        viewModel { ReservationViewModel(get()) }
+        viewModel { ReservationViewModel(get(), get(), get()) }
         viewModel { TestViewModel(get()) }
     }
 }

@@ -1,5 +1,6 @@
 package com.compfest16.sea_salon.features.presentation.component.widget
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,20 +23,28 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.compfest16.sea_salon.features.domain.dummy.BranchDummy
 import com.compfest16.sea_salon.features.domain.model.BranchModel
+import com.compfest16.sea_salon.features.domain.model.ImageModel
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestLightGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
+import com.compfest16.sea_salon.features.presentation.screen.home_section.HomeViewModel
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +53,14 @@ fun BranchCard(
     branchModel: BranchModel = BranchDummy.malang,
     onClick: (String) -> Unit = {}
 ){
+    val viewModel = getViewModel<HomeViewModel>()
+    val image = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit){
+        viewModel.getImageByAffiliate(branchModel.branchID, "branch_image"){
+            image.value = it.firstOrNull()?.src ?: Uri.EMPTY
+        }
+    }
+
     Card(modifier = Modifier
         .fillMaxWidth()
         .height(80.dp),
@@ -58,7 +75,8 @@ fun BranchCard(
                     colors = CardDefaults.cardColors(CompfestGrey),
                     shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
                 ){
-
+                    AsyncImage(model = image.value, contentDescription = "branch-image", modifier = Modifier
+                        .fillMaxSize(), contentScale = ContentScale.Crop)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {

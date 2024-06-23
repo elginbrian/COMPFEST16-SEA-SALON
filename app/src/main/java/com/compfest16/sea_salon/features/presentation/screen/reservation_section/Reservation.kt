@@ -3,6 +3,7 @@ package com.compfest16.sea_salon.features.presentation.screen.reservation_sectio
 import DatePicker
 import TimePicker
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,15 +39,19 @@ import com.compfest16.sea_salon.features.presentation.component.widget.CityCard
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.R
+import com.compfest16.sea_salon.features.domain.model.ReservationModel
 import com.compfest16.sea_salon.features.presentation.component.button.DropDownButton
 import com.compfest16.sea_salon.features.presentation.component.widget.SelectType
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
+import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
@@ -57,6 +63,7 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
     val selectedType = remember { mutableStateOf("Haircuts and styling") }
     val branchId = bottomController.currentBackStackEntry?.arguments?.getString("branch_id")
     val viewModel = getViewModel<ReservationViewModel>()
+    val userId = remember { mutableStateOf("") }
 
     val branchList = remember { mutableStateOf(BranchDummy.list) }
     viewModel.getNearbyBranches {
@@ -64,6 +71,16 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
         Log.d("BranchList", it.toString())
     }
     val currentBranch = branchList.value.filter { it.branchID == branchId }.firstOrNull()
+
+    LaunchedEffect(Unit) {
+        val currentUserEmail = Firebase.auth.currentUser?.email
+        if (currentUserEmail != null) {
+            viewModel.getUserByEmail(currentUserEmail) { user ->
+                userId.value = user.userID
+                Log.d("TAG", "TopBar: ${userId.value}")
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -162,7 +179,22 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        RoundedBarButton(text = "Book Reservation")
+                        RoundedBarButton(text = "Book Reservation"){
+                            viewModel.bookReservation(ReservationModel(
+                                reservationID = UUID.randomUUID().toString(),
+                                branchID = branchId ?: "",
+                                userID = userId.value,
+                                date = selectedDate.value,
+                                reservationType = when(selectedType.value){
+                                    "Haircuts and styling" -> 1
+                                    "Manicure and pedicure" -> 2
+                                    "Facial treatments" -> 3
+                                    else -> 4
+                                }
+                            ))
+
+                            bottomController.navigate(BottomBarNav.Home.route)
+                        }
                     }
                 }
 
