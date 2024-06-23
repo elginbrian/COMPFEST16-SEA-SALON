@@ -3,7 +3,6 @@ package com.compfest16.sea_salon.features.presentation.screen.reservation_sectio
 import DatePicker
 import TimePicker
 import android.annotation.SuppressLint
-import android.app.TimePickerDialog
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -17,8 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CalendarLocale
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -40,14 +37,11 @@ import com.compfest16.sea_salon.features.presentation.component.widget.CityCard
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.R
-import com.compfest16.sea_salon.features.presentation.component.widget.DropDown
+import com.compfest16.sea_salon.features.presentation.component.button.DropDownButton
 import com.compfest16.sea_salon.features.presentation.component.widget.SelectType
-import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
-import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -121,7 +115,7 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
                         .padding(horizontal = 16.dp)) {
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        DropDown(value = selectedDate.value, painter = painterResource(id = R.drawable.reservation)){
+                        DropDownButton(value = selectedDate.value, painter = painterResource(id = R.drawable.reservation)){
                             showDatePicker.value = true
                         }
                         if (showDatePicker.value) {
@@ -148,7 +142,7 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
                                 }
                             )
                         }
-                        DropDown(value = selectedType.value, painter = painterResource(id = R.drawable.spa)){
+                        DropDownButton(value = selectedType.value, painter = painterResource(id = R.drawable.spa)){
                             showTypePicker.value = true
                         }
                         if (showTypePicker.value) {

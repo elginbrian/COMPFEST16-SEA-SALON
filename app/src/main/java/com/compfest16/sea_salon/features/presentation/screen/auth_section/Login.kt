@@ -114,9 +114,6 @@ fun Login(
                 viewModel.login(email.value, password.value){
                     message.value = it
                 }
-
-                email.value = ""
-                password.value = ""
             }
         }
 

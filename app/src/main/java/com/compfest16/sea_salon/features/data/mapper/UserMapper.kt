@@ -1,6 +1,7 @@
 package com.compfest16.sea_salon.features.data.mapper
 
 import com.compfest16.sea_salon.features.domain.model.UserModel
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 fun UserModel.toHashMap(): HashMap<String, Any>{
@@ -26,3 +27,15 @@ fun QueryDocumentSnapshot.toUserModel(): UserModel{
         isCustomer = this["is_customer"] as Boolean
     )
 }
+
+fun DocumentSnapshot.toUserModel(): UserModel {
+    return UserModel(
+        userID = this.getString("user_id") ?: "",
+        fullName = this.getString("full_name") ?: "",
+        email = this.getString("email") ?: "",
+        phoneNum = this.getString("phone_num") ?: "",
+        password = this.getString("password") ?: "",
+        isCustomer = this.getBoolean("is_customer") ?: false
+    )
+}
+

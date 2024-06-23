@@ -23,25 +23,29 @@ class ImageRepositoryImpl: ImageRepository {
     override suspend fun GetImageById(id: String, affiliateID: String, role: String): Flow<ImageModel> {
         return flow {
             try {
-                var image = ImageDummy.notFound
-                db.child("$role/$id").downloadUrl.addOnSuccessListener {
-                    image = ImageModel(
-                        imageID = id,
-                        affiliateID = affiliateID,
-                        src = it,
-                        role = role.toImageRole()
-                    )
-                    Log.d("Image", image.toString())
-                }.addOnFailureListener {
-                    Log.d("Image", it.message.toString())
+                val image = suspendCancellableCoroutine<ImageModel> { continuation ->
+                    db.child("$role/$id").downloadUrl.addOnSuccessListener { uri ->
+                        val imageModel = ImageModel(
+                            imageID = id,
+                            affiliateID = affiliateID,
+                            src = uri,
+                            role = role.toImageRole()
+                        )
+                        Log.d("Image", imageModel.toString())
+                        continuation.resume(imageModel)
+                    }.addOnFailureListener { exception ->
+                        Log.e("Image", exception.message.toString(), exception)
+                        continuation.resume(ImageDummy.notFound)
+                    }
                 }
-            } catch (e: Exception){
-                Log.d("Image", e.message.toString())
+                emit(image)
+            } catch (e: Exception) {
+                Log.e("Image", e.message.toString(), e)
                 emit(ImageDummy.notFound)
-                return@flow
             }
         }
     }
+
 
     override suspend fun GetImagesByAffiliateId(id: String, role: String): Flow<List<ImageModel>> {
         TODO("Not yet implemented")
@@ -91,5 +95,4 @@ class ImageRepositoryImpl: ImageRepository {
             }
         }
     }
-
 }

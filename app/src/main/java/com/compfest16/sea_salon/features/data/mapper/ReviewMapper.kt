@@ -1,7 +1,9 @@
 package com.compfest16.sea_salon.features.data.mapper
 
 import com.compfest16.sea_salon.features.domain.model.ReviewModel
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 
 fun ReviewModel.toHashMap(): HashMap<String, Any>{
     var map = HashMap<String, Any>()
@@ -24,3 +26,15 @@ fun QueryDocumentSnapshot.toReviewModel(): ReviewModel{
         comment = this["comment"] as String
     )
 }
+
+fun DocumentSnapshot.toReviewModel(): ReviewModel {
+    return ReviewModel(
+        reviewID = this.getString("review_id") ?: "",
+        userID = this.getString("user_id") ?: "",
+        branchID = this.getString("branch_id") ?: "",
+        star = (this.getLong("star") ?: 0).toInt(),
+        comment = this.getString("comment") ?: ""
+    )
+}
+
+

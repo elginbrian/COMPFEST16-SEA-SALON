@@ -1,6 +1,7 @@
 package com.compfest16.sea_salon.features.data.mapper
 
 import com.compfest16.sea_salon.features.domain.model.ReservationModel
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 fun ReservationModel.toHashMap(): HashMap<String, Any>{
@@ -22,5 +23,15 @@ fun QueryDocumentSnapshot.toReservationModel(): ReservationModel{
         userID = this["user_id"] as String,
         reservationType = this["reservation_type"] as Int,
         date = this["date"] as String
+    )
+}
+
+fun DocumentSnapshot.toReservationModel(): ReservationModel {
+    return ReservationModel(
+        reservationID = this.getString("reservation_id") ?: "",
+        branchID = this.getString("branch_id") ?: "",
+        userID = this.getString("user_id") ?: "",
+        reservationType = this.getLong("reservation_type")?.toInt() ?: 0,
+        date = this.getString("date") ?: ""
     )
 }

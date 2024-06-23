@@ -33,27 +33,18 @@ class BranchRepositoryImpl: BranchRepository {
                             Log.d("Branch", "Parsed branch models: $innerResult")
                             continuation.resume(innerResult)
                         } catch (e: Exception) {
-                            val error = BranchDummy.notFound.apply {
-                                branchName = e.message ?: "Unknown error"
-                            }
                             Log.e("Branch", "Error parsing documents: ${e.message}", e)
-                            continuation.resume(mutableListOf(error))
+                            continuation.resume(mutableListOf())
                         }
                     }.addOnFailureListener { exception ->
-                        val error = BranchDummy.notFound.apply {
-                            branchName = exception.message ?: "Unknown error"
-                        }
                         Log.e("Branch", "Error fetching branches: ${exception.message}", exception)
-                        continuation.resume(mutableListOf(error))
+                        continuation.resume(mutableListOf())
                     }
                 }
                 emit(result)
             } catch (e: Exception) {
                 Log.e("Branch", "Exception in GetBranches flow: ${e.message}", e)
-                val error = BranchDummy.notFound.apply {
-                    branchName = e.message ?: "Unknown error"
-                }
-                emit(listOf(error))
+                emit(listOf())
             }
         }
     }
@@ -61,85 +52,110 @@ class BranchRepositoryImpl: BranchRepository {
     override suspend fun GetBranchByID(id: String): Flow<BranchModel> {
         return flow {
             try {
-                val query = db.collection("branch").get()
-                var result = BranchDummy.notFound
-
-                for (document in query.result){
-                    if (document.id == id){
-                        result = document.toBranchModel()
-                    }
+                val result = suspendCancellableCoroutine<BranchModel> { continuation ->
+                    db.collection("branch").document(id).get()
+                        .addOnSuccessListener { documentSnapshot ->
+                            try {
+                                val branchModel = if (documentSnapshot.exists()) {
+                                    documentSnapshot.toBranchModel()
+                                } else {
+                                    BranchDummy.notFound
+                                }
+                                Log.d("Branch", "Successfully fetched branch: $branchModel")
+                                continuation.resume(branchModel)
+                            } catch (e: Exception) {
+                                Log.e("Branch", "Error parsing document: ${e.message}", e)
+                                continuation.resume(BranchDummy.notFound)
+                            }
+                        }.addOnFailureListener { exception ->
+                            Log.e("Branch", "Error fetching branch: ${exception.message}", exception)
+                            continuation.resume(BranchDummy.notFound)
+                        }
                 }
-                Log.d("Branch", result.toString())
                 emit(result)
-                return@flow
-            } catch (e: Exception){
+            } catch (e: Exception) {
+                Log.e("Branch", "Exception in GetBranchByID flow: ${e.message}", e)
                 emit(BranchDummy.notFound)
-                Log.d("Branch", e.message.toString())
-                return@flow
             }
         }
     }
+
 
     override suspend fun PostBranch(branch: BranchModel): Flow<String> {
         return flow {
             try {
-                var messege: String = ""
-                db.collection("branch").document(branch.branchID).set(branch.toHashMap()).addOnSuccessListener {
-                    messege = "Branch Registered Successfully"
-                    Log.d("Branch", "Branch Registered Successfully")
-                }.addOnFailureListener{
-                    messege = it.message.toString()
-                    Log.d("Branch", it.message.toString())
+                val message = suspendCancellableCoroutine<String> { continuation ->
+                    db.collection("branch").document(branch.branchID).set(branch.toHashMap())
+                        .addOnSuccessListener {
+                            val successMessage = "Branch Registered Successfully"
+                            Log.d("Branch", successMessage)
+                            continuation.resume(successMessage)
+                        }
+                        .addOnFailureListener { exception ->
+                            val errorMessage = exception.message.toString()
+                            Log.e("Branch", errorMessage, exception)
+                            continuation.resume(errorMessage)
+                        }
                 }
-                emit(messege)
-                return@flow
-            } catch (e: Exception){
-                emit(e.message.toString())
-                Log.d("Branch", e.message.toString())
-                return@flow
+                emit(message)
+            } catch (e: Exception) {
+                val errorMessage = e.message.toString()
+                Log.e("Branch", errorMessage, e)
+                emit(errorMessage)
             }
         }
     }
+
 
     override suspend fun PutBranch(branch: BranchModel): Flow<String> {
         return flow {
             try {
-                var messege: String = ""
-                db.collection("branch").document(branch.branchID).update(branch.toHashMap()).addOnSuccessListener {
-                    messege = "Branch Updated Successfully"
-                    Log.d("Branch", "Branch Updated Successfully")
-                }.addOnFailureListener{
-                    messege = it.message.toString()
-                    Log.d("Branch", it.message.toString())
+                val message = suspendCancellableCoroutine<String> { continuation ->
+                    db.collection("branch").document(branch.branchID).update(branch.toHashMap())
+                        .addOnSuccessListener {
+                            val successMessage = "Branch Updated Successfully"
+                            Log.d("Branch", successMessage)
+                            continuation.resume(successMessage)
+                        }
+                        .addOnFailureListener { exception ->
+                            val errorMessage = exception.message.toString()
+                            Log.e("Branch", errorMessage, exception)
+                            continuation.resume(errorMessage)
+                        }
                 }
-                emit(messege)
-                return@flow
-            } catch (e: Exception){
-                emit(e.message.toString())
-                Log.d("Branch", e.message.toString())
-                return@flow
+                emit(message)
+            } catch (e: Exception) {
+                val errorMessage = e.message.toString()
+                Log.e("Branch", errorMessage, e)
+                emit(errorMessage)
             }
         }
     }
 
+
     override suspend fun DeleteBranch(id: String): Flow<String> {
         return flow {
             try {
-                var messege: String = ""
-                db.collection("branch").document(id).delete().addOnSuccessListener {
-                    messege = "Branch Deleted Successfully"
-                    Log.d("Branch", "Branch Deleted Successfully")
-                }.addOnFailureListener{
-                    messege = it.message.toString()
-                    Log.d("Branch", it.message.toString())
+                val message = suspendCancellableCoroutine<String> { continuation ->
+                    db.collection("branch").document(id).delete()
+                        .addOnSuccessListener {
+                            val successMessage = "Branch Deleted Successfully"
+                            Log.d("Branch", successMessage)
+                            continuation.resume(successMessage)
+                        }
+                        .addOnFailureListener { exception ->
+                            val errorMessage = exception.message.toString()
+                            Log.e("Branch", errorMessage, exception)
+                            continuation.resume(errorMessage)
+                        }
                 }
-                emit(messege)
-                return@flow
-            } catch (e: Exception){
-                emit(e.message.toString())
-                Log.d("Branch", e.message.toString())
-                return@flow
+                emit(message)
+            } catch (e: Exception) {
+                val errorMessage = e.message.toString()
+                Log.e("Branch", errorMessage, e)
+                emit(errorMessage)
             }
         }
     }
+
 }

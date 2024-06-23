@@ -83,44 +83,104 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun GetUsers(): Flow<List<UserModel>> {
         return flow {
             try {
-                val query = db.collection("user").get()
-                val result = mutableListOf<UserModel>()
-
-                for (document in query.result){
-                    result.add(document.toUserModel())
+                val result = suspendCancellableCoroutine<MutableList<UserModel>> { continuation ->
+                    db.collection("user").get()
+                        .addOnSuccessListener { querySnapshot ->
+                            try {
+                                val userList = mutableListOf<UserModel>()
+                                for (document in querySnapshot) {
+                                    userList.add(document.toUserModel())
+                                }
+                                Log.d("User", userList.toString())
+                                continuation.resume(userList)
+                            } catch (e: Exception) {
+                                Log.e("User", "Error parsing documents: ${e.message}", e)
+                                continuation.resume(mutableListOf())
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("User", "Error fetching users: ${exception.message}", exception)
+                            continuation.resume(mutableListOf())
+                        }
                 }
-                Log.d("User", result.toString())
                 emit(result)
-                return@flow
-            } catch (e: Exception){
+            } catch (e: Exception) {
+                Log.e("User", "Exception in GetUsers flow: ${e.message}", e)
                 emit(emptyList())
-                Log.d("User", e.message.toString())
-                return@flow
             }
         }
     }
+
 
     override suspend fun GetUserByID(id: String): Flow<UserModel> {
         return flow {
             try {
-                val query = db.collection("user").get()
-                var result = UserDummy.notFound
-
-                for (document in query.result){
-                    if(document.id == id){
-                        result = document.toUserModel()
-                    }
+                val result = suspendCancellableCoroutine<UserModel> { continuation ->
+                    db.collection("user").document(id).get()
+                        .addOnSuccessListener { documentSnapshot ->
+                            try {
+                                val userModel = if (documentSnapshot.exists()) {
+                                    documentSnapshot.toUserModel()
+                                } else {
+                                    UserDummy.notFound
+                                }
+                                Log.d("User", userModel.toString())
+                                continuation.resume(userModel)
+                            } catch (e: Exception) {
+                                Log.e("User", "Error parsing document: ${e.message}", e)
+                                continuation.resume(UserDummy.notFound)
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("User", "Error fetching user: ${exception.message}", exception)
+                            continuation.resume(UserDummy.notFound)
+                        }
                 }
-                Log.d("User", result.toString())
                 emit(result)
-                return@flow
-            } catch (e: Exception){
+            } catch (e: Exception) {
+                Log.e("User", "Exception in GetUserByID flow: ${e.message}", e)
                 emit(UserDummy.notFound)
-                Log.d("User", e.message.toString())
-                return@flow
             }
         }
     }
+
+    override suspend fun GetUserByEmail(email: String): Flow<UserModel> {
+        return flow {
+            try {
+                val result = suspendCancellableCoroutine<UserModel> { continuation ->
+                    db.collection("user")
+                        .whereEqualTo("email", email)
+                        .get()
+                        .addOnSuccessListener { querySnapshot ->
+                            try {
+                                if (querySnapshot.documents.isNotEmpty()) {
+                                    val documentSnapshot = querySnapshot.documents.first()
+                                    val userModel = documentSnapshot.toUserModel()
+                                    Log.d("User", "User found: $userModel")
+                                    continuation.resume(userModel)
+                                } else {
+                                    Log.d("User", "User not found for email: $email")
+                                    continuation.resume(UserDummy.notFound)
+                                }
+                            } catch (e: Exception) {
+                                Log.e("User", "Error parsing document: ${e.message}", e)
+                                continuation.resume(UserDummy.notFound)
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("User", "Error fetching user: ${exception.message}", exception)
+                            continuation.resume(UserDummy.notFound)
+                        }
+                }
+                emit(result)
+            } catch (e: Exception) {
+                Log.e("User", "Exception in GetUserByEmail flow: ${e.message}", e)
+                emit(UserDummy.notFound)
+            }
+        }
+    }
+
+
 
     override suspend fun PostUser(user: UserModel): Flow<String> {
         return flow {
@@ -128,21 +188,25 @@ class UserRepositoryImpl : UserRepository {
                 val message = suspendCancellableCoroutine<String> { continuation ->
                     db.collection("user").document(user.userID).set(user.toHashMap())
                         .addOnSuccessListener {
-                            Log.d("User", "User Added to Firestore, uploading image...")
-                            continuation.resume("User Added to Firestore, uploading image...")
+                            val successMessage = "User Added to Firestore, uploading image..."
+                            Log.d("User", successMessage)
+                            continuation.resume(successMessage)
                         }
                         .addOnFailureListener { exception ->
-                            Log.d("User", exception.message.toString())
+                            val errorMessage = exception.message.toString()
+                            Log.e("User", errorMessage, exception)
                             continuation.resumeWithException(exception)
                         }
                 }
                 emit(message)
             } catch (e: Exception) {
-                Log.d("User", e.message.toString())
-                emit(e.message.toString())
+                val errorMessage = e.message.toString()
+                Log.e("User", errorMessage, e)
+                emit(errorMessage)
             }
         }
     }
+
 
 
     override suspend fun PutUser(user: UserModel): Flow<String> {

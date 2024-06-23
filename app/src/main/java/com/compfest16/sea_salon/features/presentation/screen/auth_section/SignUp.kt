@@ -150,9 +150,6 @@ fun SignUp(
                 viewModel.signUp(userModel.value, imageModel.value){
                     message.value = it
                 }
-
-                userModel.value = UserDummy.empty
-                imageModel.value = ImageDummy.notFound
             }
         }
 

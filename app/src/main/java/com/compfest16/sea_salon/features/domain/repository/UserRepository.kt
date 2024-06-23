@@ -9,6 +9,7 @@ interface UserRepository {
     suspend fun LoginUser(email: String, password: String): Flow<String>
     suspend fun GetUsers(): Flow<List<UserModel>>
     suspend fun GetUserByID(id: String): Flow<UserModel>
+    suspend fun GetUserByEmail(email: String): Flow<UserModel>
     suspend fun PostUser(user: UserModel): Flow<String>
     suspend fun PutUser(user: UserModel): Flow<String>
     suspend fun DeleteUser(id: String): Flow<String>
