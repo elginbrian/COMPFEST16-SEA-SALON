@@ -22,6 +22,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlac
 import com.compfest16.sea_salon.features.presentation.screen.home_section.Home
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.Nearby
 import com.compfest16.sea_salon.features.presentation.component.widget.BottomBar
+import com.compfest16.sea_salon.features.presentation.screen.profile_section.Profile
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.Reservation
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectBranch
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectCity
@@ -36,6 +37,7 @@ sealed class BottomBarNav(val route: String){
     object Reservation : BottomBarNav("reservation/{branch_id}"){
         fun createRoute(branchId: String) = "reservation/$branchId"
     }
+    object Profile : BottomBarNav("profile")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -53,7 +55,9 @@ fun BottomBarNavigation(mainController: NavHostController) {
             Box(modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 42.dp)){
-                TopBar()
+                TopBar(){
+                    bottomController.navigate(BottomBarNav.Profile.route)
+                }
             }
         }
     ) {
@@ -118,6 +122,18 @@ fun BottomBarNavigation(mainController: NavHostController) {
             }, arguments = listOf(navArgument("branch_id") { type = NavType.StringType })
             ){
                 Reservation(bottomController)
+            }
+
+            composable(BottomBarNav.Profile.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }){
+                Profile(mainController)
             }
         }
     }
