@@ -16,7 +16,7 @@ data class UserModel(
         repository: ImageRepository,
         onSuccess: (ImageModel) -> Unit
     ){
-        repository.GetImagesByAffiliateId(userID, "user_profile_picture").collect{
+        repository.GetImageById(userID, "user_profile_picture").collect{
             onSuccess(it.firstOrNull() ?: ImageDummy.notFound)
         }
     }
@@ -25,7 +25,7 @@ data class UserModel(
         repository: ImageRepository,
         onSuccess: (ImageModel) -> Unit
     ){
-        repository.GetImagesByAffiliateId(userID, "user_banner").collect{
+        repository.GetImageById(userID, "user_banner").collect{
             onSuccess(it.firstOrNull() ?: ImageDummy.notFound)
         }
     }

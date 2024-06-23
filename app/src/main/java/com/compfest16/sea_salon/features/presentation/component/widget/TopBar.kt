@@ -20,6 +20,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,16 +38,36 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestLigh
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.compfest16.sea_salon.features.presentation.screen.home_section.HomeViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 @Preview
 fun TopBar(
-    profilePicture: Uri = Firebase.auth.currentUser?.photoUrl ?: Uri.EMPTY,
+    profilePicture: Uri = Uri.EMPTY,
     userName: String = Firebase.auth.currentUser?.displayName ?: "SEA Salon",
     onClick: () -> Unit = {}
 ){
+    val id = remember { mutableStateOf("") }
+    val viewModel = getViewModel<HomeViewModel>()
+    val profilePictureUrl = remember { mutableStateOf(profilePicture) }
+
+    LaunchedEffect(Unit) {
+        val currentUserEmail = Firebase.auth.currentUser?.email
+        if (currentUserEmail != null) {
+            viewModel.getUserByEmail(currentUserEmail) { user ->
+                id.value = user.userID
+                Log.d("TAG", "TopBar: $id")
+                viewModel.getImageByAffiliate(id.value, "user_profile_picture") { images ->
+                    profilePictureUrl.value = images.firstOrNull()?.src ?: Uri.EMPTY
+                    Log.d("TAG", "TopBar: $profilePictureUrl")
+                }
+            }
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,7 +89,7 @@ fun TopBar(
                     colors = CardDefaults.cardColors(CompfestLightGrey)
                 ) {
                     Box(modifier = Modifier.fillMaxSize()){
-                        AsyncImage(model = profilePicture, contentDescription = "profile-picture", modifier = Modifier
+                        AsyncImage(model = profilePictureUrl.value, contentDescription = "profile-picture", modifier = Modifier
                             .fillMaxSize()
                             .clickable {
                                 onClick()

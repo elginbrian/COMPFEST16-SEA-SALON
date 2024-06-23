@@ -29,7 +29,7 @@ object Module {
 
     val viewModel = module {
         viewModel { AuthViewModel(get(), get()) }
-        viewModel { HomeViewModel(get(), get()) }
+        viewModel { HomeViewModel(get(), get(), get()) }
         viewModel { NearbyViewModel(get()) }
         viewModel { ReservationViewModel(get()) }
         viewModel { TestViewModel(get()) }
