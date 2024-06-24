@@ -1,7 +1,9 @@
 package com.compfest16.sea_salon.features.presentation.screen.profile_section
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.provider.ContactsContract.Profile
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,6 +42,7 @@ import com.compfest16.sea_salon.features.presentation.component.button.EditProfi
 import com.compfest16.sea_salon.features.presentation.component.button.RoundedBarButton
 import com.compfest16.sea_salon.features.presentation.component.textfield.SecureLineTextField
 import com.compfest16.sea_salon.features.presentation.component.textfield.SingleLineTextField
+import com.compfest16.sea_salon.features.presentation.component.widget.RoundedProfile
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
@@ -50,6 +53,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhit
 import com.compfest16.sea_salon.features.presentation.navigation.MainNav
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
 import com.compfest16.sea_salon.features.presentation.screen.auth_section.AuthViewModel
+import com.compfest16.sea_salon.features.presentation.screen.home_section.HomeViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
@@ -62,6 +66,22 @@ import java.util.UUID
 fun Profile(
     mainController: NavHostController = rememberNavController()
 ){
+    val user              = remember { mutableStateOf(UserDummy.notFound) }
+    val viewModel         = getViewModel<HomeViewModel>()
+    val profilePictureUrl = remember { mutableStateOf(Uri.EMPTY) }
+
+    LaunchedEffect(Unit) {
+        val currentUserEmail = Firebase.auth.currentUser?.email
+        if (currentUserEmail != null) {
+            viewModel.getUserByEmail(currentUserEmail) {
+                user.value = it
+                viewModel.getImageByAffiliate(user.value.userID, "user_profile_picture") { images ->
+                    profilePictureUrl.value = images.firstOrNull()?.src ?: Uri.EMPTY
+                    Log.d("TAG", "TopBar: $profilePictureUrl")
+                }
+            }
+        }
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -77,27 +97,25 @@ fun Profile(
             Spacer(modifier = Modifier.height(32.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                EditProfileButton(color = CompfestPink){
-
-                }
+                RoundedProfile(selectedImageUri = profilePictureUrl.value)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
             SingleLineTextField(
-                title = Firebase.auth.currentUser?.displayName.toString(),
+                title = user.value.fullName,
                 painter = painterResource(id = R.drawable.person),
             )
             SingleLineTextField(
-                title = Firebase.auth.currentUser?.email.toString(),
+                title = user.value.email,
                 painter = painterResource(id = R.drawable.email),
             )
             SingleLineTextField(
-                title = Firebase.auth.currentUser?.phoneNumber.toString(),
+                title = user.value.phoneNum,
                 painter = painterResource(id = R.drawable.email),
             )
             Spacer(modifier = Modifier.height(32.dp))
 
-            RoundedBarButton(text = "Log-out", color = Color(0xFFEC4444)){
+            RoundedBarButton(text = "Logout", color = Color(0xFFEC4444)){
                 Firebase.auth.signOut()
                 mainController.navigate(MainNav.Splash.route)
             }

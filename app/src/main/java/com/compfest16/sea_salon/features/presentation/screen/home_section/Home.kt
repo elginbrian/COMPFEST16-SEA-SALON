@@ -1,7 +1,6 @@
 package com.compfest16.sea_salon.features.presentation.screen.home_section
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -41,30 +40,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.R
 import com.compfest16.sea_salon.features.domain.dummy.BranchDummy
-import com.compfest16.sea_salon.features.domain.dummy.ReservationDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReviewDummy
 import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.domain.model.ReservationModel
 import com.compfest16.sea_salon.features.presentation.component.widget.BranchCard
 import com.compfest16.sea_salon.features.presentation.component.widget.HistoryCard
 import com.compfest16.sea_salon.features.presentation.component.widget.ReviewCard
-import com.compfest16.sea_salon.features.presentation.component.widget.TopBar
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
-import com.compfest16.sea_salon.features.presentation.screen.nearby_section.NearbyViewModel
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.RequestLocationPermission
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.find3ClosestBranches
-import com.compfest16.sea_salon.features.presentation.screen.nearby_section.findClosestBranch
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.getCurrentLocation
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.initializeLocationProvider
-import com.compfest16.sea_salon.features.presentation.screen.test_section.Test
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.maps.android.compose.rememberCameraPositionState
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -82,13 +73,15 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
     val message         = remember { mutableStateOf("") }
     val branchList      = remember { mutableStateOf(listOf<BranchModel>()) }
     val closestBranch   = remember { mutableStateOf(listOf(Pair(BranchDummy.malang, 0.0))) }
-    val history         = remember { mutableStateOf(listOf<ReservationModel>()) }
+    val historyList     = remember { mutableStateOf(listOf<ReservationModel>()) }
     val id              = remember { mutableStateOf("") }
 
-    viewModel.getNearbyBranches {
-        branchList.value = it
-        Log.d("BranchList", it.toString())
-        closestBranch.value = find3ClosestBranches(currentLocation.value.first, currentLocation.value.second, it)
+    LaunchedEffect(Unit) {
+        viewModel.getBranchList {
+            branchList.value = it
+            Log.d("BranchList", it.toString())
+            closestBranch.value = find3ClosestBranches(currentLocation.value.first, currentLocation.value.second, it)
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -98,7 +91,7 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                 id.value = user.userID
                 Log.d("TAG", "TopBar: $id")
                 viewModel.getUserHistory(user.userID){
-                    history.value = it
+                    historyList.value = it
                 }
             }
         }
@@ -179,7 +172,7 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                         Spacer(modifier = Modifier.width(16.dp))
                     }
 
-                    items(history.value){reservation ->
+                    items(historyList.value){ reservation ->
                         HistoryCard(
                             reservationModel = reservation,
                             branchModel = branchList.value.filter { it.branchID == reservation.branchID }.first()
@@ -188,7 +181,7 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                                 branchName = it.first.branchName,
                                 date = it.second.date,
                                 userId = id.value,
-                                reservationId = it.second.reservationID
+                                branchId = it.first.branchID
                             )
                             bottomController.navigate(route)
                         }

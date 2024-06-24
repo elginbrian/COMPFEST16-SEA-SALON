@@ -52,8 +52,8 @@ fun TopBar(
     userName: String = Firebase.auth.currentUser?.displayName ?: "SEA Salon",
     onClick: () -> Unit = {}
 ){
-    val id = remember { mutableStateOf("") }
-    val viewModel = getViewModel<HomeViewModel>()
+    val id                = remember { mutableStateOf("") }
+    val viewModel         = getViewModel<HomeViewModel>()
     val profilePictureUrl = remember { mutableStateOf(profilePicture) }
 
     LaunchedEffect(Unit) {

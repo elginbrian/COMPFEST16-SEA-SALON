@@ -86,24 +86,26 @@ import org.koin.androidx.compose.getViewModel
 fun Nearby(
     bottomController: NavController = rememberNavController(),
 ) {
-    val viewModel = getViewModel<NearbyViewModel>()
-    val context = LocalContext.current
-    val currentLocation = remember { mutableStateOf(BranchDummy.malang.branchCoordinates) }
+    val viewModel           = getViewModel<NearbyViewModel>()
+    val context             = LocalContext.current
+    val currentLocation     = remember { mutableStateOf(BranchDummy.malang.branchCoordinates) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
             LatLng(currentLocation.value.first, currentLocation.value.second), 14f)
     }
-    val isLoading  = remember { mutableStateOf(true) }
-    val message    = remember { mutableStateOf("") }
-    val branchList = remember { mutableStateOf(listOf<BranchModel>()) }
-    val closestBranch = remember { mutableStateOf(Pair(BranchDummy.malang, 0.0)) }
-    val isStreetView = remember { mutableStateOf(false) }
+    val isLoading           = remember { mutableStateOf(true) }
+    val message             = remember { mutableStateOf("") }
+    val branchList          = remember { mutableStateOf(listOf<BranchModel>()) }
+    val closestBranch       = remember { mutableStateOf(Pair(BranchDummy.malang, 0.0)) }
+    val isStreetView        = remember { mutableStateOf(false) }
     val selectedCoordinates = remember { mutableStateOf(closestBranch.value.first) }
 
-    viewModel.getNearbyBranches {
-        branchList.value = it
-        Log.d("BranchList", it.toString())
-        closestBranch.value = findClosestBranch(currentLocation.value.first, currentLocation.value.second, it)
+    LaunchedEffect(Unit){
+        viewModel.getNearbyBranches {
+            branchList.value = it
+            Log.d("BranchList", it.toString())
+            closestBranch.value = findClosestBranch(currentLocation.value.first, currentLocation.value.second, it)
+        }
     }
 
     RequestLocationPermission(

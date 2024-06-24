@@ -40,8 +40,8 @@ sealed class BottomBarNav(val route: String){
         fun createRoute(branchId: String) = "reservation/$branchId"
     }
     object Profile : BottomBarNav("profile")
-    object Review : BottomBarNav("review/{branch_name}/{date}/{reservation_id}/{user_id}"){
-        fun createRoute(branchName: String, date: String, reservationId: String, userId: String) = "review/$branchName/$date/$reservationId/$userId"
+    object Review : BottomBarNav("review/{branch_name}/{date}/{branch_id}/{user_id}"){
+        fun createRoute(branchName: String, date: String, branchId: String, userId: String) = "review/$branchName/$date/$branchId/$userId"
     }
     object History : BottomBarNav("history")
 }
@@ -153,14 +153,14 @@ fun BottomBarNavigation(mainController: NavHostController) {
             }, arguments = listOf(
                 navArgument("branch_name"){ type = NavType.StringType },
                 navArgument("date"){ type = NavType.StringType },
-                navArgument("reservation_id"){ type = NavType.StringType },
+                navArgument("branch_id"){ type = NavType.StringType },
                 navArgument("user_id"){ type = NavType.StringType }
             )){
                 PostReview(bottomController)
             }
 
             composable(BottomBarNav.History.route){
-                History()
+                History(bottomController)
             }
         }
     }

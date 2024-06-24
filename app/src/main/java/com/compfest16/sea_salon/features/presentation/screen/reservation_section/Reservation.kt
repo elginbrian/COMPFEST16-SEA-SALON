@@ -59,18 +59,20 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
     val showDatePicker = remember { mutableStateOf(false) }
     val showTimePicker = remember { mutableStateOf(false) }
     val showTypePicker = remember { mutableStateOf(false) }
-    val selectedDate = remember { mutableStateOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy (HH:mm)")).toString()) }
-    val selectedType = remember { mutableStateOf("Haircuts and styling") }
-    val branchId = bottomController.currentBackStackEntry?.arguments?.getString("branch_id")
-    val viewModel = getViewModel<ReservationViewModel>()
-    val userId = remember { mutableStateOf("") }
+    val selectedDate   = remember { mutableStateOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy (HH:mm)")).toString()) }
+    val selectedType   = remember { mutableStateOf("Haircuts and styling") }
+    val branchId       = bottomController.currentBackStackEntry?.arguments?.getString("branch_id")
+    val viewModel      = getViewModel<ReservationViewModel>()
+    val userId         = remember { mutableStateOf("") }
+    val branchList     = remember { mutableStateOf(BranchDummy.list) }
+    val currentBranch  = branchList.value.filter { it.branchID == branchId }.firstOrNull()
 
-    val branchList = remember { mutableStateOf(BranchDummy.list) }
-    viewModel.getNearbyBranches {
-        branchList.value = it
-        Log.d("BranchList", it.toString())
+    LaunchedEffect(Unit) {
+        viewModel.getNearbyBranches {
+            branchList.value = it
+            Log.d("BranchList", it.toString())
+        }
     }
-    val currentBranch = branchList.value.filter { it.branchID == branchId }.firstOrNull()
 
     LaunchedEffect(Unit) {
         val currentUserEmail = Firebase.auth.currentUser?.email

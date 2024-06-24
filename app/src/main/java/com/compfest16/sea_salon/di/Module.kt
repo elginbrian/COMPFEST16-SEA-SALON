@@ -14,6 +14,7 @@ import com.compfest16.sea_salon.features.presentation.screen.auth_section.AuthVi
 import com.compfest16.sea_salon.features.presentation.screen.home_section.HomeViewModel
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.NearbyViewModel
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.ReservationViewModel
+import com.compfest16.sea_salon.features.presentation.screen.review_section.ReviewViewModel
 import com.compfest16.sea_salon.features.presentation.screen.test_section.TestViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -32,6 +33,7 @@ object Module {
         viewModel { HomeViewModel(get(), get(), get(), get()) }
         viewModel { NearbyViewModel(get()) }
         viewModel { ReservationViewModel(get(), get(), get()) }
+        viewModel { ReviewViewModel(get(), get(), get(), get()) }
         viewModel { TestViewModel(get()) }
     }
 }
