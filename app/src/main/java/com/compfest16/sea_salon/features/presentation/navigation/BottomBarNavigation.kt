@@ -26,6 +26,8 @@ import com.compfest16.sea_salon.features.presentation.screen.profile_section.Pro
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.Reservation
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectBranch
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectCity
+import com.compfest16.sea_salon.features.presentation.screen.review_section.History
+import com.compfest16.sea_salon.features.presentation.screen.review_section.PostReview
 
 sealed class BottomBarNav(val route: String){
     object Home : BottomBarNav("home")
@@ -38,6 +40,10 @@ sealed class BottomBarNav(val route: String){
         fun createRoute(branchId: String) = "reservation/$branchId"
     }
     object Profile : BottomBarNav("profile")
+    object Review : BottomBarNav("review/{branch_name}/{date}/{reservation_id}/{user_id}"){
+        fun createRoute(branchName: String, date: String, reservationId: String, userId: String) = "review/$branchName/$date/$reservationId/$userId"
+    }
+    object History : BottomBarNav("history")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -134,6 +140,27 @@ fun BottomBarNavigation(mainController: NavHostController) {
                 )
             }){
                 Profile(mainController)
+            }
+
+            composable(BottomBarNav.Review.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }, arguments = listOf(
+                navArgument("branch_name"){ type = NavType.StringType },
+                navArgument("date"){ type = NavType.StringType },
+                navArgument("reservation_id"){ type = NavType.StringType },
+                navArgument("user_id"){ type = NavType.StringType }
+            )){
+                PostReview(bottomController)
+            }
+
+            composable(BottomBarNav.History.route){
+                History()
             }
         }
     }

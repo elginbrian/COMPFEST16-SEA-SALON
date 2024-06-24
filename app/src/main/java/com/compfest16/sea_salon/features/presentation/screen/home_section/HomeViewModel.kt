@@ -5,16 +5,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.domain.model.ImageModel
+import com.compfest16.sea_salon.features.domain.model.ReservationModel
 import com.compfest16.sea_salon.features.domain.model.UserModel
 import com.compfest16.sea_salon.features.domain.repository.BranchRepository
 import com.compfest16.sea_salon.features.domain.repository.ImageRepository
+import com.compfest16.sea_salon.features.domain.repository.ReservationRepository
 import com.compfest16.sea_salon.features.domain.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     val userRepository: UserRepository,
     val branchRepository: BranchRepository,
-    val imageRepository: ImageRepository
+    val imageRepository: ImageRepository,
+    val reservationRepository: ReservationRepository
 ): ViewModel() {
     fun getNearbyBranches(
         onResult: (List<BranchModel>) -> Unit
@@ -22,6 +25,18 @@ class HomeViewModel(
         viewModelScope.launch {
             branchRepository.GetBranches().collect{
                 Log.d("NearbyViewModel", "getNearbyBranches: $it")
+                onResult(it)
+            }
+        }
+    }
+
+    fun getUserHistory(
+        affiliate: String,
+        onResult: (List<ReservationModel>) -> Unit
+    ){
+        viewModelScope.launch {
+            reservationRepository.GetReservationByUserID(affiliate).collect{
+                Log.d("HomeViewModel", "getUserHistory: $it")
                 onResult(it)
             }
         }

@@ -1,6 +1,7 @@
 package com.compfest16.sea_salon.features.presentation.screen.home_section
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -23,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,6 +44,7 @@ import com.compfest16.sea_salon.features.domain.dummy.BranchDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReservationDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReviewDummy
 import com.compfest16.sea_salon.features.domain.model.BranchModel
+import com.compfest16.sea_salon.features.domain.model.ReservationModel
 import com.compfest16.sea_salon.features.presentation.component.widget.BranchCard
 import com.compfest16.sea_salon.features.presentation.component.widget.HistoryCard
 import com.compfest16.sea_salon.features.presentation.component.widget.ReviewCard
@@ -59,6 +62,8 @@ import com.compfest16.sea_salon.features.presentation.screen.nearby_section.init
 import com.compfest16.sea_salon.features.presentation.screen.test_section.Test
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.maps.android.compose.rememberCameraPositionState
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDateTime
@@ -70,18 +75,33 @@ import java.time.format.DateTimeFormatter
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun Home(bottomController: NavHostController = rememberNavController()) {
 
-    val viewModel = getViewModel<HomeViewModel>()
-    val context = LocalContext.current
+    val viewModel       = getViewModel<HomeViewModel>()
+    val context         = LocalContext.current
     val currentLocation = remember { mutableStateOf(BranchDummy.malang.branchCoordinates) }
-    val isLoading  = remember { mutableStateOf(true) }
-    val message    = remember { mutableStateOf("") }
-    val branchList = remember { mutableStateOf(listOf<BranchModel>()) }
-    val closestBranch = remember { mutableStateOf(listOf(Pair(BranchDummy.malang, 0.0))) }
+    val isLoading       = remember { mutableStateOf(true) }
+    val message         = remember { mutableStateOf("") }
+    val branchList      = remember { mutableStateOf(listOf<BranchModel>()) }
+    val closestBranch   = remember { mutableStateOf(listOf(Pair(BranchDummy.malang, 0.0))) }
+    val history         = remember { mutableStateOf(listOf<ReservationModel>()) }
+    val id              = remember { mutableStateOf("") }
 
     viewModel.getNearbyBranches {
         branchList.value = it
         Log.d("BranchList", it.toString())
         closestBranch.value = find3ClosestBranches(currentLocation.value.first, currentLocation.value.second, it)
+    }
+
+    LaunchedEffect(Unit) {
+        val currentUserEmail = Firebase.auth.currentUser?.email
+        if (currentUserEmail != null) {
+            viewModel.getUserByEmail(currentUserEmail) { user ->
+                id.value = user.userID
+                Log.d("TAG", "TopBar: $id")
+                viewModel.getUserHistory(user.userID){
+                    history.value = it
+                }
+            }
+        }
     }
 
     RequestLocationPermission(
@@ -159,11 +179,19 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                         Spacer(modifier = Modifier.width(16.dp))
                     }
 
-                    items(ReservationDummy.list){
+                    items(history.value){reservation ->
                         HistoryCard(
-                            reservationModel = ReservationDummy.list.random(),
-                            branchModel = BranchDummy.list.random()
-                        )
+                            reservationModel = reservation,
+                            branchModel = branchList.value.filter { it.branchID == reservation.branchID }.first()
+                        ){
+                            val route = BottomBarNav.Review.createRoute(
+                                branchName = it.first.branchName,
+                                date = it.second.date,
+                                userId = id.value,
+                                reservationId = it.second.reservationID
+                            )
+                            bottomController.navigate(route)
+                        }
                         Spacer(modifier = Modifier.width(16.dp))
                     }
                 }

@@ -76,6 +76,7 @@ fun BottomBar(bottomController: NavHostController = rememberNavController()) {
                 )
             }
             IconButton(onClick = {
+                bottomController.navigate(BottomBarNav.History.route)
                 index.value = 3
             }) {
                 Icon(
