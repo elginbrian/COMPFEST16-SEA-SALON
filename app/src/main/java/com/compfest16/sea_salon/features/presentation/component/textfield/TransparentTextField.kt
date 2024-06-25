@@ -43,11 +43,12 @@ fun TransparentTextField(
                 .onFocusChanged { onFocusChange(it) }
         )
         if (isHintVisible && text.isEmpty()) {
+
             Text(
                 text = hint,
                 style = TextStyle(color = Color.White.copy(alpha = 0.5f)),
                 fontSize = fontSize,
-                modifier = androidx.compose.ui.Modifier.padding(start = 4.dp, top = 8.dp)
+                modifier = androidx.compose.ui.Modifier.padding(start = 4.dp)
             )
         }
     }

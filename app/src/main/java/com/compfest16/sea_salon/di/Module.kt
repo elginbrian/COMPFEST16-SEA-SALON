@@ -33,7 +33,7 @@ object Module {
         viewModel { HomeViewModel(get(), get(), get(), get()) }
         viewModel { NearbyViewModel(get()) }
         viewModel { ReservationViewModel(get(), get(), get()) }
-        viewModel { ReviewViewModel(get(), get(), get(), get()) }
+        viewModel { ReviewViewModel(get(), get(), get(), get(), get()) }
         viewModel { TestViewModel(get()) }
     }
 }

@@ -120,6 +120,7 @@ fun Nearby(
                     cameraPositionState.position = CameraPosition.fromLatLngZoom(LatLng(location.first, location.second), 14f)
                     Log.d("Nearby", "Location: $location")
                     closestBranch.value = findClosestBranch(currentLocation.value.first, currentLocation.value.second, branchList.value)
+                    selectedCoordinates.value = closestBranch.value.first
                     isLoading.value = false
                 },
                 onGetCurrentLocationFailed = { exception ->
@@ -159,9 +160,14 @@ fun Nearby(
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                BranchCard(branchModel = selectedCoordinates.value)
+                BranchCard(branchModel = selectedCoordinates.value){
+
+                }
                 Spacer(modifier = Modifier.height(8.dp))
-                RoundedBarButton(text = "Book Reservation")
+                RoundedBarButton(text = "Book Reservation"){
+                    val route = BottomBarNav.Reservation.createRoute(selectedCoordinates.value.branchID)
+                    bottomController.navigate(route)
+                }
                 Spacer(modifier = Modifier.height(140.dp))
             }
         },

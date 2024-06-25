@@ -91,7 +91,7 @@ fun History(bottomController: NavHostController = rememberNavController()) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(60.dp))
                 }
 
                 item(span = { GridItemSpan(maxLineSpan) }) {

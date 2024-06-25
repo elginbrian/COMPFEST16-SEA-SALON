@@ -29,10 +29,14 @@ class ReservationViewModel(
         }
     }
 
-    fun bookReservation(reservation: ReservationModel){
+    fun bookReservation(
+        reservation: ReservationModel,
+        onResult: (String) -> Unit
+    ){
         viewModelScope.launch {
             reservationRepository.PostReservation(reservation).collect{
                 Log.d("ReservationViewModel", "bookReservation: $it")
+                onResult(it)
             }
         }
     }

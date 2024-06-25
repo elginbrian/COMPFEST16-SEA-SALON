@@ -2,6 +2,12 @@ package com.compfest16.sea_salon.features.presentation.component.widget
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +27,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,6 +43,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestLightGrey
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
@@ -55,6 +63,7 @@ fun TopBar(
     val id                = remember { mutableStateOf("") }
     val viewModel         = getViewModel<HomeViewModel>()
     val profilePictureUrl = remember { mutableStateOf(profilePicture) }
+    val isLoading         = remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         val currentUserEmail = Firebase.auth.currentUser?.email
@@ -65,6 +74,7 @@ fun TopBar(
                 viewModel.getImageByAffiliate(id.value, "user_profile_picture") { images ->
                     profilePictureUrl.value = images.firstOrNull()?.src ?: Uri.EMPTY
                     Log.d("TAG", "TopBar: $profilePictureUrl")
+                    isLoading.value = false
                 }
             }
         }
@@ -88,14 +98,37 @@ fun TopBar(
             ) {
                 Card(modifier = Modifier.size(44.dp),
                     shape = CircleShape,
-                    colors = CardDefaults.cardColors(CompfestLightGrey)
+                    colors = CardDefaults.cardColors(CompfestGrey)
                 ) {
-                    Box(modifier = Modifier.fillMaxSize()){
-                        AsyncImage(model = profilePictureUrl.value, contentDescription = "profile-picture", modifier = Modifier
-                            .fillMaxSize()
-                            .clickable {
-                                onClick()
-                            }, contentScale = ContentScale.Crop)
+                    Box(modifier = Modifier.fillMaxSize().clickable {
+                        onClick()
+                    }){
+                        if (isLoading.value) {
+                            val infiniteTransition = rememberInfiniteTransition()
+                            val alpha by infiniteTransition.animateFloat(
+                                initialValue = 0.3f,
+                                targetValue = 1.0f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(durationMillis = 1000, easing = LinearEasing),
+                                    repeatMode = RepeatMode.Reverse
+                                )
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(CompfestLightGrey.copy(alpha = alpha)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                            }
+                        } else {
+                            AsyncImage(
+                                model = profilePictureUrl.value,
+                                contentDescription = "profile-picture",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
 
                 }

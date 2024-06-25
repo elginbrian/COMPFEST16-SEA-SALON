@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.compfest16.sea_salon.features.domain.model.BranchModel
+import com.compfest16.sea_salon.features.domain.model.ImageModel
 import com.compfest16.sea_salon.features.domain.model.ReservationModel
 import com.compfest16.sea_salon.features.domain.model.ReviewModel
 import com.compfest16.sea_salon.features.domain.model.UserModel
@@ -18,7 +19,8 @@ class ReviewViewModel(
     val userRepository: UserRepository,
     val branchRepository: BranchRepository,
     val reservationRepository: ReservationRepository,
-    val reviewRepository: ReviewRepository
+    val reviewRepository: ReviewRepository,
+    val imageRepository: ImageRepository
 ): ViewModel() {
     fun getBranchList(
         onResult: (List<BranchModel>) -> Unit
@@ -54,10 +56,20 @@ class ReviewViewModel(
         }
     }
 
-    fun postReview(reviewModel: ReviewModel){
+    fun postReview(
+        reviewModel: ReviewModel,
+        image: ImageModel,
+        onResult: (String) -> Unit
+    ){
         viewModelScope.launch {
             reviewRepository.PostReview(reviewModel).collect{
                 Log.d("ReviewViewModel", "postReview: $it")
+                onResult(it)
+                if(it.equals("Review Posted Successfully")){
+                    imageRepository.PostImage(image).collect{
+                        onResult(it)
+                    }
+                }
             }
         }
     }
