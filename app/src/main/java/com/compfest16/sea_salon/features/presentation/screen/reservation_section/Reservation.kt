@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,7 +30,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +48,8 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlac
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
 import com.compfest16.sea_salon.R
 import com.compfest16.sea_salon.features.domain.model.ReservationModel
+import com.compfest16.sea_salon.features.domain.model.ReviewModel
+import com.compfest16.sea_salon.features.domain.model.UserModel
 import com.compfest16.sea_salon.features.presentation.component.button.DropDownButton
 import com.compfest16.sea_salon.features.presentation.component.widget.SelectType
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
@@ -70,18 +76,32 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
     val showTypePicker = remember { mutableStateOf(false) }
     val selectedDate   = remember { mutableStateOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy (HH:mm)")).toString()) }
     val selectedType   = remember { mutableStateOf("Haircuts and styling") }
-    val branchId       = bottomController.currentBackStackEntry?.arguments?.getString("branch_id")
+    val branchId       = bottomController.currentBackStackEntry?.arguments?.getString("branch_id") ?: ""
     val viewModel      = getViewModel<ReservationViewModel>()
     val userId         = remember { mutableStateOf("") }
     val branchList     = remember { mutableStateOf(BranchDummy.list) }
     val currentBranch  = branchList.value.filter { it.branchID == branchId }.firstOrNull()
     val message        = remember { mutableStateOf("") }
     val isLoading      = remember { mutableStateOf(false) }
+    val review         = remember { mutableStateOf(listOf<ReviewModel>()) }
+    val userList       = remember { mutableStateOf(listOf<UserModel>()) }
 
     LaunchedEffect(Unit) {
         viewModel.getNearbyBranches {
             branchList.value = it
             Log.d("BranchList", it.toString())
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getBranchReviews(branchId){
+            review.value = it
+            Log.d("Review", it.toString())
+
+            viewModel.getAllUsers {
+                Log.d("User", it.toString())
+                userList.value = it
+            }
         }
     }
 
@@ -224,6 +244,35 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
                     }
                 }
 
+                item {
+                    Text(text = "Reviews", modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 24.dp), color = CompfestWhite, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                }
+
+                if(review.value.isNotEmpty()){
+                    items(review.value){ review ->
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(text = (userList.value.find { it.userID == review.userID }?.fullName ?: ""), fontSize = 14.sp, color = CompfestWhite, fontWeight = FontWeight.SemiBold)
+                            Text(text = review.comment + " - (" + review.star + " Stars)", fontSize = 14.sp, color = CompfestWhite)
+                            Spacer(modifier = Modifier.height(12.dp))
+                            HorizontalDivider()
+                        }
+                    }
+                } else {
+                    item {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(text = "There are no reviews yet", color = Color.LightGray, textAlign = TextAlign.Center, modifier = Modifier
+                                .fillMaxWidth(), fontSize = 12.sp)
+                        }
+                    }
+                }
                 item {
                     Spacer(modifier = Modifier.height(160.dp))
                 }

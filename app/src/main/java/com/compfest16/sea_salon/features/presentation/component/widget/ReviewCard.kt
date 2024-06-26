@@ -33,8 +33,10 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhit
 @Preview
 fun ReviewCard(
     reviewModel: ReviewModel = ReviewDummy.ramaMalang,
-    branchModel: BranchModel = BranchDummy.malang
+    branchList: List<BranchModel> = BranchDummy.list,
 ){
+    val thisBranch = branchList.find { it.branchID == reviewModel.branchID } ?: BranchDummy.list.first()
+
     Card(modifier = Modifier.size(160.dp),
         shape = RoundedCornerShape(bottomEnd = 24.dp),
         colors = CardDefaults.cardColors(listOf(CompfestPurple, CompfestAqua, CompfestPink).random())
@@ -44,7 +46,7 @@ fun ReviewCard(
                 .fillMaxSize()
                 .padding(top = 8.dp, start = 8.dp)) {
                 Icon(imageVector = Icons.Default.Clear, contentDescription = "close", tint = CompfestWhite, modifier = Modifier.size(24.dp))
-                Text(text = branchModel.branchName, color = CompfestWhite, modifier = Modifier.padding(top = 5.dp, start = 2.dp), fontSize = 12.sp, maxLines = 1)
+                Text(text = thisBranch.branchName, color = CompfestWhite, modifier = Modifier.padding(top = 1.dp, start = 2.dp), fontSize = 12.sp, maxLines = 1)
             }
             Column(modifier = Modifier
                 .fillMaxSize()

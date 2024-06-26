@@ -115,8 +115,8 @@ fun PostReview(bottomController: NavHostController = rememberNavController()) {
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize(),
-                    containerColor = CompfestBlueGrey,
-                    contentColor = CompfestBlueGrey,
+                    containerColor = CompfestBlack,
+                    contentColor = CompfestBlack,
                     bottomBar = {
                         Column(modifier = Modifier
                             .fillMaxWidth()
@@ -127,7 +127,7 @@ fun PostReview(bottomController: NavHostController = rememberNavController()) {
                                 stars.value = newRating
                             })
                             Spacer(modifier = Modifier.height(
-                                if(isLoading.value) 140.dp else 100.dp
+                                if(isLoading.value) 140.dp else 110.dp
                             ))
                         }
                     }

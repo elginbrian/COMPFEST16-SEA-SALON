@@ -122,10 +122,12 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
     }
 
     LaunchedEffect(Unit) {
+        isLoading.value = true
         viewModel.getBranchList {
             branchList.value = it
             Log.d("BranchList", it.toString())
             closestBranch.value = find3ClosestBranches(currentLocation.value.first, currentLocation.value.second, it)
+            isLoading.value = false
         }
     }
 
@@ -139,6 +141,12 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                 viewModel.getUserHistory(user.userID){
                     historyList.value = it
                     isLoading.value = false
+                }
+
+                viewModel.getUserReview(
+                    affiliate = id.value
+                ){
+                    review.value = it
                 }
             }
         }
@@ -273,7 +281,7 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)) {
-                        Text(text = "Your Reservation History is Empty", color = Color.LightGray, textAlign = TextAlign.Center, modifier = Modifier
+                        Text(text = "You haven't made any reservation yet", color = Color.LightGray, textAlign = TextAlign.Center, modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp), fontSize = 12.sp)
                         RoundedBarButton("Book Reservation Now!", color = CompfestAqua){
@@ -314,20 +322,33 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
             item {
                 LazyRow(modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)){
+                    .height(
+                        if (review.value.isEmpty()) 0.dp else 160.dp
+                    )){
                     item{
                         Spacer(modifier = Modifier.width(16.dp))
                     }
 
-                    items(ReviewDummy.list){
-                        ReviewCard(reviewModel = it, branchModel = BranchDummy.list.random())
+                    items(review.value){
+                        ReviewCard(reviewModel = it, branchList = branchList.value)
                         Spacer(modifier = Modifier.width(16.dp))
                     }
                 }
             }
 
+            if(review.value.isEmpty()){
+                item {
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)) {
+                        Text(text = "You haven't reviewed any branch yet", color = Color.LightGray, textAlign = TextAlign.Center, modifier = Modifier
+                            .fillMaxWidth(), fontSize = 12.sp)
+                    }
+                }
+            }
+
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(if(review.value.isEmpty()) 24.dp else 48.dp))
                 Box(modifier = Modifier
                     .height(260.dp)
                     .fillMaxWidth()

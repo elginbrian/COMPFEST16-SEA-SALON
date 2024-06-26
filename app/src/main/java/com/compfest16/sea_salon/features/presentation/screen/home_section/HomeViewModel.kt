@@ -6,18 +6,21 @@ import androidx.lifecycle.viewModelScope
 import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.domain.model.ImageModel
 import com.compfest16.sea_salon.features.domain.model.ReservationModel
+import com.compfest16.sea_salon.features.domain.model.ReviewModel
 import com.compfest16.sea_salon.features.domain.model.UserModel
 import com.compfest16.sea_salon.features.domain.repository.BranchRepository
 import com.compfest16.sea_salon.features.domain.repository.ImageRepository
 import com.compfest16.sea_salon.features.domain.repository.ReservationRepository
+import com.compfest16.sea_salon.features.domain.repository.ReviewRepository
 import com.compfest16.sea_salon.features.domain.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    val userRepository: UserRepository,
-    val branchRepository: BranchRepository,
-    val imageRepository: ImageRepository,
-    val reservationRepository: ReservationRepository
+    private val userRepository: UserRepository,
+    private val branchRepository: BranchRepository,
+    private val imageRepository: ImageRepository,
+    private val reservationRepository: ReservationRepository,
+    private val reviewRepository: ReviewRepository
 ): ViewModel() {
     fun getBranchList(
         onResult: (List<BranchModel>) -> Unit
@@ -60,6 +63,17 @@ class HomeViewModel(
     ){
         viewModelScope.launch {
             imageRepository.GetImageById(affiliate, role).collect{
+                onResult(it)
+            }
+        }
+    }
+
+    fun getUserReview(
+        affiliate: String,
+        onResult: (List<ReviewModel>) -> Unit
+    ){
+        viewModelScope.launch {
+            reviewRepository.GetReviewByUserID(affiliate).collect{
                 onResult(it)
             }
         }
