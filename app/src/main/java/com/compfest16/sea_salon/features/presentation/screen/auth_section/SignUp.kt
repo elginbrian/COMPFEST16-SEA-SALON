@@ -116,7 +116,7 @@ fun SignUp(
             )
             SingleLineTextField(
                 title = "Phone Number",
-                painter = painterResource(id = R.drawable.email),
+                painter = painterResource(id = R.drawable.phone),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 value = userModel.value.phoneNum,
                 onValueChange = {

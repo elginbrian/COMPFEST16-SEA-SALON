@@ -111,7 +111,7 @@ fun Profile(
             )
             SingleLineTextField(
                 title = user.value.phoneNum,
-                painter = painterResource(id = R.drawable.email),
+                painter = painterResource(id = R.drawable.phone),
             )
             Spacer(modifier = Modifier.height(32.dp))
 

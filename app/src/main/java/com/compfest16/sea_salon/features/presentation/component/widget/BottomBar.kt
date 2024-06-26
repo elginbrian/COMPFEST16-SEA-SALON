@@ -27,6 +27,8 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestLigh
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurpleLight
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 @Preview
@@ -43,11 +45,19 @@ fun BottomBar(bottomController: NavHostController = rememberNavController()) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = {
-                bottomController.navigate(BottomBarNav.Home.route)
+                if(Firebase.auth.currentUser?.email.equals("thomas.n@compfest.id")){
+                    bottomController.navigate(BottomBarNav.Dashboard.route)
+                } else {
+                    bottomController.navigate(BottomBarNav.Home.route)
+                }
                 index.value = 0
             }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.home),
+                    painter = if(Firebase.auth.currentUser?.email.equals("thomas.n@compfest.id")){
+                        painterResource(id = R.drawable.setting)
+                    } else {
+                        painterResource(id = R.drawable.home)
+                           },
                     contentDescription = "Home",
                     tint = if(index.value == 0) CompfestPurpleLight else CompfestLightGrey,
                     modifier = Modifier.size(if(index.value == 0) 26.dp else 24.dp)

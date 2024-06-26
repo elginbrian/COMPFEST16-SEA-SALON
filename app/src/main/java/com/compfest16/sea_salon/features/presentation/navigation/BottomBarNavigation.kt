@@ -22,12 +22,15 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlac
 import com.compfest16.sea_salon.features.presentation.screen.home_section.Home
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.Nearby
 import com.compfest16.sea_salon.features.presentation.component.widget.BottomBar
+import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.Dashboard
 import com.compfest16.sea_salon.features.presentation.screen.profile_section.Profile
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.Reservation
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectBranch
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectCity
 import com.compfest16.sea_salon.features.presentation.screen.review_section.History
 import com.compfest16.sea_salon.features.presentation.screen.review_section.PostReview
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 sealed class BottomBarNav(val route: String){
     object Home : BottomBarNav("home")
@@ -44,6 +47,7 @@ sealed class BottomBarNav(val route: String){
         fun createRoute(branchName: String, date: String, branchId: String, userId: String) = "review/$branchName/$date/$branchId/$userId"
     }
     object History : BottomBarNav("history")
+    object Dashboard : BottomBarNav("dashboard")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -67,7 +71,10 @@ fun BottomBarNavigation(mainController: NavHostController) {
             }
         }
     ) {
-        NavHost(navController = bottomController, startDestination = BottomBarNav.Home.route){
+        NavHost(
+            navController = bottomController,
+            startDestination = if(Firebase.auth.currentUser?.email.equals("thomas.n@compfest.id")) BottomBarNav.Dashboard.route else BottomBarNav.Home.route
+        ){
             composable(BottomBarNav.Home.route, enterTransition = {
                 return@composable slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
@@ -78,6 +85,18 @@ fun BottomBarNavigation(mainController: NavHostController) {
                 )
             }){
                 Home(bottomController)
+            }
+
+            composable(BottomBarNav.Dashboard.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }){
+                Dashboard(bottomController, mainController)
             }
 
             composable(BottomBarNav.Nearby.route, enterTransition = {

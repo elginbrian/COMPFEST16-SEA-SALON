@@ -291,14 +291,14 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                 }
             }
 
-            item {
-                Text(text = "SEA Salon™ Near You", modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 24.dp, bottom = 8.dp), color = CompfestWhite, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
-            }
+            if(!isLoading.value){
+                item {
+                    Text(text = "SEA Salon™ Near You", modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 24.dp, bottom = 8.dp), color = CompfestWhite, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                }
 
-            items(closestBranch.value){
-                if(!isLoading.value){
+                items(closestBranch.value){
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)) {
@@ -308,8 +308,6 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                } else {
-
                 }
             }
 
