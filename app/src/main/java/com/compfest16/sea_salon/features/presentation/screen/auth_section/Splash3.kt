@@ -24,8 +24,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +39,7 @@ import com.compfest16.sea_salon.R
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestGrey
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.SplashNav
 
@@ -88,7 +91,8 @@ fun Splash3(splashController: NavHostController = rememberNavController()) {
             .fillMaxHeight()
             .fillMaxWidth(0.6f)
             .padding(bottom = 60.dp, start = 16.dp), verticalArrangement = Arrangement.Bottom) {
-            Text(text = "Lorem Ipsum Dolor Sit Amet", color = CompfestWhite, fontSize = 36.sp, fontWeight = FontWeight.SemiBold, lineHeight = 40.sp)
+            Text(text = "SEA\nSALON™", color = CompfestWhite, fontSize = 56.sp, fontWeight = FontWeight.SemiBold, lineHeight = 60.sp, style = TextStyle(brush = Brush.horizontalGradient(
+                listOf(CompfestAqua, CompfestWhite))))
         }
     }
 }

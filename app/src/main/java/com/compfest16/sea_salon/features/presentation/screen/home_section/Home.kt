@@ -1,14 +1,20 @@
 package com.compfest16.sea_salon.features.presentation.screen.home_section
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,25 +23,40 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.compfest16.sea_salon.R
@@ -43,11 +64,18 @@ import com.compfest16.sea_salon.features.domain.dummy.BranchDummy
 import com.compfest16.sea_salon.features.domain.dummy.ReviewDummy
 import com.compfest16.sea_salon.features.domain.model.BranchModel
 import com.compfest16.sea_salon.features.domain.model.ReservationModel
+import com.compfest16.sea_salon.features.domain.model.ReviewModel
+import com.compfest16.sea_salon.features.presentation.component.button.RoundedBarButton
 import com.compfest16.sea_salon.features.presentation.component.widget.BranchCard
 import com.compfest16.sea_salon.features.presentation.component.widget.HistoryCard
 import com.compfest16.sea_salon.features.presentation.component.widget.ReviewCard
+import com.compfest16.sea_salon.features.presentation.component.widget.ServiceCard
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestAqua
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlack
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlueGrey
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestLightGrey
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
+import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.RequestLocationPermission
@@ -56,6 +84,8 @@ import com.compfest16.sea_salon.features.presentation.screen.nearby_section.getC
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.initializeLocationProvider
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -74,7 +104,22 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
     val branchList      = remember { mutableStateOf(listOf<BranchModel>()) }
     val closestBranch   = remember { mutableStateOf(listOf(Pair(BranchDummy.malang, 0.0))) }
     val historyList     = remember { mutableStateOf(listOf<ReservationModel>()) }
+    val review          = remember { mutableStateOf(listOf<ReviewModel>()) }
     val id              = remember { mutableStateOf("") }
+    val intent          = remember { Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/08164829372")) }
+    val listState       = rememberLazyListState()
+    val coroutineScope  = rememberCoroutineScope()
+    val itemCount       = 3
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            while (true) {
+                delay(3000)
+                val nextIndex = (listState.firstVisibleItemIndex + 1) % itemCount
+                listState.animateScrollToItem(index = nextIndex)
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getBranchList {
@@ -85,6 +130,7 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
     }
 
     LaunchedEffect(Unit) {
+        isLoading.value = true
         val currentUserEmail = Firebase.auth.currentUser?.email
         if (currentUserEmail != null) {
             viewModel.getUserByEmail(currentUserEmail) { user ->
@@ -92,6 +138,7 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                 Log.d("TAG", "TopBar: $id")
                 viewModel.getUserHistory(user.userID){
                     historyList.value = it
+                    isLoading.value = false
                 }
             }
         }
@@ -100,7 +147,6 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
     RequestLocationPermission(
         onPermissionGranted = {
             Log.d("Nearby", "Permission granted")
-            message.value = "Getting your location..."
             initializeLocationProvider(context)
             getCurrentLocation(
                 onGetCurrentLocationSuccess = { location ->
@@ -112,7 +158,6 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                 },
                 onGetCurrentLocationFailed = { exception ->
                     Log.e("Nearby", "getLastLocation:exception", exception)
-                    message.value = "Failed to get your location"
                     isLoading.value = false
                 },
                 context = context
@@ -144,7 +189,7 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                     .fillMaxWidth()
                     .height(240.dp),
                     colors = CardDefaults.cardColors(CompfestBlueGrey),
-                    shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                    shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Image(painter = painterResource(id = R.drawable.home_hero), contentDescription = "hero", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
@@ -152,7 +197,38 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                         Column(modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
-                            Text(text = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE), color = CompfestWhite)
+                            Text(text = " SEA SALON™", fontSize = 48.sp, fontWeight = FontWeight.SemiBold, lineHeight = 50.sp, style = TextStyle(brush = Brush.horizontalGradient(
+                                listOf(CompfestPink, CompfestWhite)
+                            )))
+                            Text(text = "\"Beauty and Elegance Redefined.\"", color = CompfestWhite, fontSize = 14.sp, fontWeight = FontWeight.Normal, textAlign = TextAlign.Right, fontStyle = FontStyle.Italic)
+                        }
+                    }
+                }
+            }
+
+            item {
+                Text(text = "Our Services", modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 24.dp, bottom = 8.dp), color = CompfestWhite, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+            }
+
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(110.dp)
+                        .padding(horizontal = 16.dp),
+                    colors = CardDefaults.cardColors(CompfestBlueGrey),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    LazyRow(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        items(3) { index ->
+                            ServiceCard(index)
                         }
                     }
                 }
@@ -167,7 +243,9 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
             item {
                 LazyRow(modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)){
+                    .height(
+                        if (historyList.value.isEmpty()) 0.dp else 160.dp
+                    )){
                     item{
                         Spacer(modifier = Modifier.width(16.dp))
                     }
@@ -189,6 +267,21 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                     }
                 }
             }
+            
+            if(historyList.value.isEmpty()){
+                item { 
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)) {
+                        Text(text = "Your Reservation History is Empty", color = Color.LightGray, textAlign = TextAlign.Center, modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp), fontSize = 12.sp)
+                        RoundedBarButton("Book Reservation Now!", color = CompfestAqua){
+                            bottomController.navigate(BottomBarNav.SelectCities.route)
+                        }
+                    }
+                }
+            }
 
             item {
                 Text(text = "SEA Salon™ Near You", modifier = Modifier
@@ -197,15 +290,19 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
             }
 
             items(closestBranch.value){
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)) {
-                    BranchCard(branchModel = it.first){
-                        val route = BottomBarNav.Reservation.createRoute(it)
-                        bottomController.navigate(route)
+                if(!isLoading.value){
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)) {
+                        BranchCard(branchModel = it.first){
+                            val route = BottomBarNav.Reservation.createRoute(it)
+                            bottomController.navigate(route)
+                        }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                } else {
+
                 }
-                Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
@@ -230,8 +327,53 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
             }
 
             item {
-                Spacer(modifier = Modifier.height(160.dp))
+                Spacer(modifier = Modifier.height(48.dp))
+                Box(modifier = Modifier
+                    .height(260.dp)
+                    .fillMaxWidth()
+                    .background(
+                        Brush.linearGradient(
+                            listOf(CompfestPink, CompfestAqua)
+                        )
+                    )){
+                    Row(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp), verticalAlignment = Alignment.CenterVertically){
+                        Column(modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(0.5f)
+                            .padding(bottom = 96.dp),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = "Contact Person:", color = CompfestWhite, fontWeight = FontWeight.Medium, fontSize = 14.sp)
+                            Text(text = "- 08123456789 (Thomas)", color = CompfestWhite, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp)
+                            Text(text = "- 08164829372 (Sekar)", color = CompfestWhite, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp)
+                        }
+                        Column(modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth()
+                            .padding(bottom = 96.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            Button(onClick = {
+                                startActivity(context, intent, null)
+                         }, colors = ButtonDefaults.buttonColors(
+                                CompfestWhite)) {
+                                Text(text = "Chat with us!", color = CompfestAqua)
+                            }
+                        }
+                    }
+                }
             }
+        }
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
+            Text(text = message.value, fontSize = 14.sp, color = CompfestWhite)
+            Spacer(modifier = Modifier.height(8.dp))
+            if (isLoading.value){
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = CompfestPink, trackColor = CompfestAqua)
+            }
+            Spacer(modifier = Modifier.height(96.dp))
         }
     }
 }

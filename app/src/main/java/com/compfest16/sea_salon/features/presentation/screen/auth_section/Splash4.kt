@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
@@ -88,7 +89,7 @@ fun Splash4(splashController: NavHostController = rememberNavController()) {
             .fillMaxHeight()
             .fillMaxWidth()
             .padding(bottom = 180.dp, end = 16.dp), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.End) {
-            Text(text = "Lorem ipsum dolor sit amet, \nconsectetur adipiscing elit. \nNunc nec lorem non ante rutrum \naliquet non a massa.", color = CompfestWhite, fontSize = 16.sp, fontWeight = FontWeight.Normal, textAlign = TextAlign.Right)
+            Text(text = "\"Beauty and Elegance Redefined:\nA Journey into Timeless Aesthetics,\nSophistication, and Unparalleled Grace.\"", color = CompfestWhite, fontSize = 16.sp, fontWeight = FontWeight.Normal, textAlign = TextAlign.Right, fontStyle = FontStyle.Italic)
         }
     }
 }
