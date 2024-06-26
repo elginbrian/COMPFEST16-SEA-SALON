@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -110,6 +111,21 @@ fun Login(
             RoundedBarButton(text = "Login"){
                 login.value = true
 
+                if(email.value.isEmpty() || password.value.isEmpty()){
+                    message.value = "Please fill all fields"
+                    return@RoundedBarButton
+                }
+
+                if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email.value).matches()){
+                    message.value = "Invalid email"
+                    return@RoundedBarButton
+                }
+
+                if(password.value.length < 6){
+                    message.value = "Password must be at least 6 characters"
+                    return@RoundedBarButton
+                }
+
                 message.value = "Verifying..."
                 viewModel.login(email.value, password.value){
                     message.value = it
@@ -129,7 +145,7 @@ fun Login(
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
             if(login.value){
-                Text(text = message.value, fontSize = 14.sp, color = CompfestWhite)
+                Text(text = message.value, fontSize = 14.sp, color = CompfestWhite, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(16.dp))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = CompfestPurple, trackColor = CompfestGrey)
             }

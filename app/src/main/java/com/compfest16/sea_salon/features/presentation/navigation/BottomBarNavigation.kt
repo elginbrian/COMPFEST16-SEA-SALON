@@ -23,6 +23,9 @@ import com.compfest16.sea_salon.features.presentation.screen.home_section.Home
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.Nearby
 import com.compfest16.sea_salon.features.presentation.component.widget.BottomBar
 import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.Dashboard
+import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.SeeReservations
+import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.SeeReviews
+import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.SeeUsers
 import com.compfest16.sea_salon.features.presentation.screen.profile_section.Profile
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.Reservation
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.SelectBranch
@@ -48,6 +51,9 @@ sealed class BottomBarNav(val route: String){
     }
     object History : BottomBarNav("history")
     object Dashboard : BottomBarNav("dashboard")
+    object SeeReservation : BottomBarNav("see_reservation")
+    object SeeReview : BottomBarNav("see_review")
+    object SeeUser : BottomBarNav("see_user")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -178,8 +184,52 @@ fun BottomBarNavigation(mainController: NavHostController) {
                 PostReview(bottomController)
             }
 
-            composable(BottomBarNav.History.route){
+            composable(BottomBarNav.History.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }){
                 History(bottomController)
+            }
+
+            composable(BottomBarNav.SeeReservation.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }){
+                SeeReservations()
+            }
+
+            composable(BottomBarNav.SeeReview.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }){
+                SeeReviews()
+            }
+
+            composable(BottomBarNav.SeeUser.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }){
+                SeeUsers()
             }
         }
     }

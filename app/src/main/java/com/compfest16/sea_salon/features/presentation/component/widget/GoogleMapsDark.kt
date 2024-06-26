@@ -112,11 +112,6 @@ fun GoogleMapsDark(
                 },
                 onClick = {
                     selectedCoordinates.value = branch
-                    Toast.makeText(
-                        context,
-                        "Click the white card to open StreetView",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     false
                 }
             )

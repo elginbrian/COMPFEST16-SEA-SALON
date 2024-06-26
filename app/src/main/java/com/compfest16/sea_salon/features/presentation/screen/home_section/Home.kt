@@ -339,8 +339,8 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)) {
-                        Text(text = "You haven't reviewed any branch yet", color = Color.LightGray, textAlign = TextAlign.Center, modifier = Modifier
-                            .fillMaxWidth(), fontSize = 12.sp)
+                        Text(text = "You haven't reviewed any branch yet\n(Review can only be made after booking a reservation)", color = Color.LightGray, textAlign = TextAlign.Center, modifier = Modifier
+                            .fillMaxWidth(), fontSize = 12.sp, lineHeight = 16.sp)
                     }
                 }
             }

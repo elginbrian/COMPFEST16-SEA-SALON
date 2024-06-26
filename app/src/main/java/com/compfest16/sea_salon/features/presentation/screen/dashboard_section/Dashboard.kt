@@ -42,6 +42,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlue
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPurple
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
+import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
 import com.compfest16.sea_salon.features.presentation.navigation.MainNav
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -112,7 +113,9 @@ fun Dashboard(
                         description = "See reservations from all branches",
                         tint = CompfestAqua,
                         painter = painterResource(id = R.drawable.reservation)
-                    )
+                    ){
+                        bottomController.navigate(BottomBarNav.SeeReservation.route)
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
@@ -126,7 +129,9 @@ fun Dashboard(
                         description = "See reviews from all branches",
                         tint = CompfestPurple,
                         painter = painterResource(id = R.drawable.star)
-                    )
+                    ){
+                        bottomController.navigate(BottomBarNav.SeeReview.route)
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
@@ -140,7 +145,9 @@ fun Dashboard(
                         description = "See all customers information",
                         tint = CompfestPink,
                         painter = painterResource(id = R.drawable.person)
-                    )
+                    ){
+                        bottomController.navigate(BottomBarNav.SeeUser.route)
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }

@@ -1,6 +1,7 @@
 package com.compfest16.sea_salon.features.presentation.screen.auth_section
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,6 +63,7 @@ fun SignUp(
     val imageModel = remember { mutableStateOf(ImageDummy.notFound) }
     val userModel  = remember { mutableStateOf(UserDummy.empty) }
     val message    = remember { mutableStateOf("") }
+    val confirm    = remember { mutableStateOf("") }
 
     if(message.value.equals("Image Uploaded Successfully")){
         LaunchedEffect(Unit){
@@ -134,15 +137,54 @@ fun SignUp(
             SecureLineTextField(
                 title = "Confirm Password",
                 painter = painterResource(id = R.drawable.password),
-                value = userModel.value.password,
+                value = confirm.value,
                 onValueChange = {
-                    userModel.value.password
+                    confirm.value
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
 
             RoundedBarButton(text = "Create Account", color = CompfestAqua){
                 signUp.value = true
+                if(imageModel.value.src == Uri.EMPTY){
+                    message.value = "Please upload your profile picture"
+                    return@RoundedBarButton
+                }
+
+                if(userModel.value.fullName.isEmpty()){
+                    message.value = "Please enter your full name"
+                    return@RoundedBarButton
+                }
+
+                if(userModel.value.email.isEmpty()){
+                    message.value = "Please enter your email"
+                    return@RoundedBarButton
+                }
+
+                if(!android.util.Patterns.EMAIL_ADDRESS.matcher(userModel.value.email).matches()){
+                    message.value = "Invalid email"
+                    return@RoundedBarButton
+                }
+
+                if(userModel.value.phoneNum.isEmpty()){
+                    message.value = "Please enter your phone number"
+                    return@RoundedBarButton
+                }
+
+                if(userModel.value.password.isEmpty()){
+                    message.value = "Please enter your password"
+                    return@RoundedBarButton
+                }
+
+                if(userModel.value.password.length < 6){
+                    message.value = "Password must be at least 6 characters"
+                    return@RoundedBarButton
+                }
+
+                if(userModel.value.password != confirm.value){
+                    message.value = "Password does not match"
+                    return@RoundedBarButton
+                }
                 userModel.value.userID = UUID.randomUUID().toString()
                 imageModel.value.affiliateID = userModel.value.userID
 
@@ -165,7 +207,7 @@ fun SignUp(
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
             if(signUp.value){
-                Text(text = message.value, fontSize = 14.sp, color = CompfestWhite)
+                Text(text = message.value, fontSize = 14.sp, color = CompfestWhite, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(16.dp))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = CompfestAqua, trackColor = CompfestGrey)
             }

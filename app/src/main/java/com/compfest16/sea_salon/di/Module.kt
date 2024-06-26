@@ -11,6 +11,7 @@ import com.compfest16.sea_salon.features.domain.repository.ReservationRepository
 import com.compfest16.sea_salon.features.domain.repository.ReviewRepository
 import com.compfest16.sea_salon.features.domain.repository.UserRepository
 import com.compfest16.sea_salon.features.presentation.screen.auth_section.AuthViewModel
+import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.DashboardViewModel
 import com.compfest16.sea_salon.features.presentation.screen.home_section.HomeViewModel
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.NearbyViewModel
 import com.compfest16.sea_salon.features.presentation.screen.reservation_section.ReservationViewModel
@@ -35,5 +36,6 @@ object Module {
         viewModel { ReservationViewModel(get(), get(), get(), get()) }
         viewModel { ReviewViewModel(get(), get(), get(), get(), get()) }
         viewModel { TestViewModel(get()) }
+        viewModel { DashboardViewModel(get(), get(), get()) }
     }
 }

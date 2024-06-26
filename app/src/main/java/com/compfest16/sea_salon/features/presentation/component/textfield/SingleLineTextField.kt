@@ -97,7 +97,9 @@ fun SingleLineTextField(
                 style = TextStyle(color = CompfestWhite),
                 modifier = Modifier
                     .padding(start = 45.dp)
-                    .clickable { isFocused.value = true }
+                    .clickable {
+                        isFocused.value = true
+                    }
             )
         }
     }
