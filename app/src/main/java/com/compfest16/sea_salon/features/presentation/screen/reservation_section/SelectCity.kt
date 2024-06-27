@@ -41,6 +41,7 @@ import org.koin.androidx.compose.getViewModel
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun SelectCity(bottomController: NavHostController = rememberNavController()) {
     val viewModel = getViewModel<ReservationViewModel>()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()

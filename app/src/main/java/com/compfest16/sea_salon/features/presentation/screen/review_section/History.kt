@@ -54,7 +54,7 @@ import org.koin.androidx.compose.getViewModel
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
 fun History(bottomController: NavHostController = rememberNavController()) {
     val viewModel   = getViewModel<ReviewViewModel>()
-    val branchList   = remember { mutableStateOf(listOf<BranchModel>()) }
+    val branchList  = remember { mutableStateOf(listOf<BranchModel>()) }
     val historyList = remember { mutableStateOf(listOf<ReservationModel>()) }
     val id          = remember { mutableStateOf("") }
 
