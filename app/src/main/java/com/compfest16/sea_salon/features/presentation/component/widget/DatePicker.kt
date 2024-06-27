@@ -33,7 +33,11 @@ fun DatePicker(onDateSelected: (String) -> Unit, onDismiss: () -> Unit, onDateCh
 }
 
 @Composable
-fun TimePicker(onTimeSelected: (String) -> Unit, onDismiss: () -> Unit) {
+fun TimePicker(
+    onTimeSelected: (String) -> Unit,
+    onDismiss: () -> Unit,
+    isTimeOnly: Boolean = false
+) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -45,7 +49,7 @@ fun TimePicker(onTimeSelected: (String) -> Unit, onDismiss: () -> Unit) {
             { _, selectedHour, selectedMinute ->
                 calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
                 calendar.set(Calendar.MINUTE, selectedMinute)
-                val format = SimpleDateFormat("(HH:mm)", Locale.getDefault())
+                val format = if (isTimeOnly) SimpleDateFormat("HH:mm", Locale.getDefault()) else SimpleDateFormat("(HH:mm)", Locale.getDefault())
                 val selectedTime = format.format(calendar.time)
                 onTimeSelected(selectedTime)
             },

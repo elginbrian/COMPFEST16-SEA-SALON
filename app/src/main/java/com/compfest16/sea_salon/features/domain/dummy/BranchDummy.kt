@@ -4,6 +4,15 @@ import com.compfest16.sea_salon.features.domain.model.BranchModel
 import java.util.UUID
 
 object BranchDummy {
+    var empty = BranchModel(
+        branchID = UUID.randomUUID().toString(),
+        branchName = "",
+        branchAddress = "",
+        branchCoordinates = Pair(0.0, 0.0),
+        openingHours = "00:00",
+        closingHours = "00:00"
+    )
+
     var notFound = BranchModel(
         branchID = "notFound",
         branchName = "Not Found",

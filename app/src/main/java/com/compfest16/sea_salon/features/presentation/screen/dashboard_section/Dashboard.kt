@@ -99,7 +99,9 @@ fun Dashboard(
                     ActionCard(
                         header = "Create New Branch",
                         description = "Create a new branch location"
-                    )
+                    ){
+                        bottomController.navigate(BottomBarNav.CreateBranch.route)
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }

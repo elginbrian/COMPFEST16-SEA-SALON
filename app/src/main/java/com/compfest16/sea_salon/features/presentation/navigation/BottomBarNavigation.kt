@@ -22,6 +22,7 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlac
 import com.compfest16.sea_salon.features.presentation.screen.home_section.Home
 import com.compfest16.sea_salon.features.presentation.screen.nearby_section.Nearby
 import com.compfest16.sea_salon.features.presentation.component.widget.BottomBar
+import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.CreateBranch
 import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.Dashboard
 import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.SeeReservations
 import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.SeeReviews
@@ -51,6 +52,7 @@ sealed class BottomBarNav(val route: String){
     }
     object History : BottomBarNav("history")
     object Dashboard : BottomBarNav("dashboard")
+    object CreateBranch : BottomBarNav("create_branch")
     object SeeReservation : BottomBarNav("see_reservation")
     object SeeReview : BottomBarNav("see_review")
     object SeeUser : BottomBarNav("see_user")
@@ -194,6 +196,18 @@ fun BottomBarNavigation(mainController: NavHostController) {
                 )
             }){
                 History(bottomController)
+            }
+
+            composable(BottomBarNav.CreateBranch.route, enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up, tween(700)
+                )
+            }, popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down, tween(700)
+                )
+            }){
+                CreateBranch(bottomController)
             }
 
             composable(BottomBarNav.SeeReservation.route, enterTransition = {
