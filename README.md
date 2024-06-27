@@ -5,12 +5,18 @@ With a rapidly growing clientele and a stellar reputation, SEA SALON is your pre
 This app lets users easily browse available services, select their preferred stylist, and book appointments quickly.
 With a user-friendly interface and seamless booking integration, making a reservation with a top stylist has never been easier!
 
+## 📦 Deployment
+
+Click the link below to download the `.apk` file: </br>
+[Download SEA SALON](https://drive.google.com/drive/folders/1WrW06zoaSF2dsebosySsfyTZ0Frn15sE?usp=sharing)
+
 ## 🛠️ Tech Stack
 
 - **Kotlin**
 - **Jetpack Compose**
 - **Firebase**
 - **Google Maps SDK**
+
 
 This project uses Model-View-ViewModel (MVVM) Clean Architecture. 
 All user interaction occurs within the View, which is in charge of detecting 
@@ -26,10 +32,7 @@ Models encapsulate the application’s data and business logic.
 They can be considered business objects that have absolutely no 
 relation to the visual aspect of the application.
 
-## 📦 Deployment
-
-Click the link below to download the `.apk` file: </br>
-[Download SEA SALON](https://drive.google.com/drive/folders/1WrW06zoaSF2dsebosySsfyTZ0Frn15sE?usp=sharing)
+![architecture0](https://github.com/elginbrian/COMPFEST16-SEA-SALON/assets/132267129/1a377adb-99d5-4fce-9c89-2825c6980527)
 
 ## 🚀 How to run the code?
 
