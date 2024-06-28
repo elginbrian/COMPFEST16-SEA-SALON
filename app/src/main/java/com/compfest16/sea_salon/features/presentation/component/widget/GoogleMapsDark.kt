@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,8 +50,10 @@ fun GoogleMapsDark(
     branchList: MutableState<List<BranchModel>>,
     selectedCoordinates: MutableState<BranchModel>,
     isStreetView: MutableState<Boolean>,
-    context: Context
+    context: Context,
+    changeBranch: MutableState<Boolean>
 ) {
+    val count = remember { mutableStateOf(0) }
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -111,7 +115,14 @@ fun GoogleMapsDark(
                     isStreetView.value = true
                 },
                 onClick = {
+                    count.value++
+                    changeBranch.value = true
                     selectedCoordinates.value = branch
+                    changeBranch.value = false
+
+                    if(count.value <= 2){
+                        Toast.makeText(context, "Do you know you can also open a street view?\uD83E\uDD73", Toast.LENGTH_LONG).show()
+                    }
                     false
                 }
             )

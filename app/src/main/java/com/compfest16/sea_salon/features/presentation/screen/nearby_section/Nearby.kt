@@ -4,8 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -79,7 +81,7 @@ import com.google.maps.android.ktx.MapsExperimentalFeature
 import kotlinx.coroutines.flow.update
 import org.koin.androidx.compose.getViewModel
 
-@OptIn(MapsExperimentalFeature::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(name = "Pixel 3A", device = Devices.PIXEL_3A)
@@ -99,12 +101,15 @@ fun Nearby(
     val closestBranch       = remember { mutableStateOf(Pair(BranchDummy.malang, 0.0)) }
     val isStreetView        = remember { mutableStateOf(false) }
     val selectedCoordinates = remember { mutableStateOf(closestBranch.value.first) }
+    val changeBranch        = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit){
         viewModel.getNearbyBranches {
+            changeBranch.value = true
             branchList.value = it
             Log.d("BranchList", it.toString())
             closestBranch.value = findClosestBranch(currentLocation.value.first, currentLocation.value.second, it)
+            changeBranch.value = false
         }
     }
 
@@ -160,7 +165,8 @@ fun Nearby(
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                BranchCard(branchModel = selectedCoordinates.value){
+
+                BranchCard(branchModel = selectedCoordinates.value, showImage = false, isShowStreetView = isStreetView){
 
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -191,7 +197,8 @@ fun Nearby(
                     branchList,
                     selectedCoordinates,
                     isStreetView,
-                    context
+                    context,
+                    changeBranch
                 )
         }
 

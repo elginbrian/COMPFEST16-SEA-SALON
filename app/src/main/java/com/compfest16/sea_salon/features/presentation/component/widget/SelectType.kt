@@ -28,7 +28,7 @@ fun SelectType(closeSelection: (String) -> Unit, currentSelection: String) {
     )
 
     ListDialog(
-        state = rememberUseCaseState(visible = true, onCloseRequest = {  }),
+        state = rememberUseCaseState(visible = true, onCloseRequest = { closeSelection(currentSelection) }),
         selection = ListSelection.Single(
             showRadioButtons = true,
             options = options
