@@ -6,12 +6,13 @@ This app lets users easily browse available services, select their preferred sty
 With a user-friendly interface and seamless booking integration, making a reservation with a top stylist has never been easier!
 
 ## 📦 Deployment
-
 Click the link below to download the `.apk` file: </br>
 [Download SEA SALON](https://drive.google.com/drive/folders/1WrW06zoaSF2dsebosySsfyTZ0Frn15sE?usp=sharing)
 
 ## 📹 Demo Video
-Coming soon...
+<a href="https://www.youtube.com/watch?v=pvng_vFeulo">
+  <img src="https://github.com/elginbrian/COMPFEST16-SEA-SALON/assets/132267129/f0ef7563-32f1-4d84-98ef-1f39cbe584a1" alt="YouTube Demo" style="width:50%">
+</a>
 
 ## 🛠️ Tech Stack
 
