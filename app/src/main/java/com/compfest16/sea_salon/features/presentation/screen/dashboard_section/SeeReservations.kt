@@ -80,12 +80,12 @@ fun SeeReservations(){
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        Text(text = "reservationID : " + it.reservationID, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
-                        Text(text = "branchID : " + it.branchID, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
-                        Text(text = "userID : " + it.userID, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "reservationID : " + it.reservationID, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "branchID : " + it.branchID, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "userID : " + it.userID, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "date : " + it.date, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
-                        Text(text = "type : " + it.getReservationType(), fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "date : " + it.date, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "type : " + it.getReservationType(), fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
                         Spacer(modifier = Modifier.height(12.dp))
                         HorizontalDivider(thickness = 1.dp, color = CompfestAqua)
                     }

@@ -78,11 +78,11 @@ fun SeeUsers(){
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        Text(text = "userID : " + it.userID, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
-                        Text(text = "fullname : " + it.fullName, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
-                        Text(text = "email : " + it.email, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
-                        Text(text = "phone : " + it.phoneNum, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
-                        Text(text = "isCustomer : " + it.isCustomer, fontSize = 14.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "userID : " + it.userID, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "fullname : " + it.fullName, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "email : " + it.email, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "phone : " + it.phoneNum, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
+                        Text(text = "isCustomer : " + it.isCustomer, fontSize = 12.sp, color = CompfestWhite, lineHeight = 18.sp)
                         Spacer(modifier = Modifier.height(12.dp))
                         HorizontalDivider(thickness = 1.dp, color = CompfestPink)
                     }

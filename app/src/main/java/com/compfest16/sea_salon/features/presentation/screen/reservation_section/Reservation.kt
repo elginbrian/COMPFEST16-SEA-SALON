@@ -57,13 +57,17 @@ import com.compfest16.sea_salon.features.presentation.design_system.CompfestBlue
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestPink
 import com.compfest16.sea_salon.features.presentation.design_system.CompfestWhite
 import com.compfest16.sea_salon.features.presentation.navigation.BottomBarNav
+import com.compfest16.sea_salon.features.presentation.screen.dashboard_section.isValidTimeFormat
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.Delay
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.getViewModel
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.UUID
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -112,7 +116,8 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
         }
     } else if(message.value.isNotEmpty()){
         LaunchedEffect(Unit) {
-            delay(1000)
+            delay(4000)
+            message.value = ""
             isLoading.value = false
         }
     }
@@ -226,6 +231,23 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
                         .padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         RoundedBarButton(text = "Book Reservation"){
                             isLoading.value = true
+
+                            if(isTimeWithinRange(
+                                    selectedDate.value.split(" ")[3],
+                                    currentBranch?.openingHours ?: "",
+                                    currentBranch?.closingHours ?: ""
+                            ).not()){
+                                message.value = "Reservation time is not within branch opening hours"
+                                return@RoundedBarButton
+                            }
+
+                            if(isDateInTheFuture(
+                                date = selectedDate.value.split(" ").subList(0, 3).joinToString(" ")
+                            ).not()){
+                                message.value = "Reservation date must be in the future"
+                                return@RoundedBarButton
+                            }
+
                             viewModel.bookReservation(ReservationModel(
                                 reservationID = UUID.randomUUID().toString(),
                                 branchID = branchId ?: "",
@@ -286,5 +308,30 @@ fun Reservation(bottomController: NavHostController = rememberNavController()) {
             }
             Spacer(modifier = Modifier.height(96.dp))
         }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun isTimeWithinRange(time: String, openingTime: String, closingTime: String): Boolean {
+    if (!isValidTimeFormat(openingTime) || !isValidTimeFormat(closingTime)) {
+        return false
+    }
+
+    val targetTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("(HH:mm)"))
+    val opening = LocalTime.parse(openingTime, DateTimeFormatter.ofPattern("HH:mm"))
+    val closing = LocalTime.parse(closingTime, DateTimeFormatter.ofPattern("HH:mm")).minusHours(1)
+
+    return targetTime.isAfter(opening) && targetTime.isBefore(closing)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun isDateInTheFuture(date: String): Boolean {
+    return try {
+        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+        val selectedDate = LocalDate.parse(date, formatter)
+        val currentDate = LocalDate.now()
+        !selectedDate.isBefore(currentDate)
+    } catch (e: DateTimeParseException) {
+        false
     }
 }

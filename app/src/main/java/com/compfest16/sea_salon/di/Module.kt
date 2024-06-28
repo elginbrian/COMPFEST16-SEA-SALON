@@ -36,6 +36,6 @@ object Module {
         viewModel { ReservationViewModel(get(), get(), get(), get()) }
         viewModel { ReviewViewModel(get(), get(), get(), get(), get()) }
         viewModel { TestViewModel(get()) }
-        viewModel { DashboardViewModel(get(), get(), get()) }
+        viewModel { DashboardViewModel(get(), get(), get(), get(), get()) }
     }
 }
