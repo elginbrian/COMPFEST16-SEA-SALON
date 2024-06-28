@@ -11,7 +11,7 @@ Click the link below to download the `.apk` file: </br>
 
 ## 📹 Demo Video
 <a href="https://www.youtube.com/watch?v=pvng_vFeulo">
-  <img src="https://github.com/elginbrian/COMPFEST16-SEA-SALON/assets/132267129/f0ef7563-32f1-4d84-98ef-1f39cbe584a1" alt="YouTube Demo" style="width:50%">
+  <img src="https://github.com/elginbrian/COMPFEST16-SEA-SALON/assets/132267129/f0ef7563-32f1-4d84-98ef-1f39cbe584a1" alt="YouTube Demo" style="width:70%">
 </a>
 
 ## 🛠️ Tech Stack
