@@ -179,7 +179,6 @@ fun Home(bottomController: NavHostController = rememberNavController()) {
         },
         onPermissionsRevoked = {
             Log.d("Nearby", "Permission revoked")
-            message.value = "Location permission revoked"
         }
     )
 

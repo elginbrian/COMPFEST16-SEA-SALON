@@ -69,6 +69,12 @@ fun SignUp(
         LaunchedEffect(Unit){
             delay(1000)
             message.value = "Redirecting to homepage..."
+
+        }
+    }
+
+    if(message.value.equals("Redirecting to homepage...")){
+        LaunchedEffect(Unit){
             delay(1000)
             mainController.navigate(MainNav.Main.route)
         }
@@ -139,7 +145,7 @@ fun SignUp(
                 painter = painterResource(id = R.drawable.password),
                 value = confirm.value,
                 onValueChange = {
-                    confirm.value
+                    confirm.value = it
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
